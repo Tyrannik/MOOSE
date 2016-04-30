@@ -81,10 +81,11 @@ MOOSE is currently still in alpha version, but will evolve over time. Right now,
 <ol>
 <li>Embedded loading (once your mission is finsihed to be published):</li>
 <li>No MOOSE installation is required by those people flying or using your mission, as MOOSE is loaded as a whole embedded within the mission.</li>
-<li><p>In order to embed MOOSE within your mission, you need to execute a trigger containing a DO SCRIPT FILE of the <a href="https://github.com/FlightControl-Master/MOOSE/blob/master/Loaders/Moose_Load_Embedded.lua">Moose_Load_Embedded.lua</a> file. This file is also included in the MOOSE package in the "Loaders" directory.</p></li>
-<li><p>To orchestrate all this, there is a MOOSE mission template created, that you can use to create your first mission.
-In the triggers section, there is a flag (9999) that will decide how MOOSE will be loaded. When flag 9999 is set, MOOSE will be dynamically loaded. When flag 9999 is off, MOOSE will be loaded embedded. Note that when loaded embedded, <strong>your mission must include the last Moose_Embedded.lua file</strong>. So, ensure that the last file is included in the DO SCRIPT section when MOOSE got an update! </p></li>
+<li>In order to embed MOOSE within your mission, you need to execute a trigger containing a DO SCRIPT FILE of the <a href="https://github.com/FlightControl-Master/MOOSE/blob/master/Loaders/Moose_Load_Embedded.lua">Moose_Load_Embedded.lua</a> file. This file is also included in the MOOSE package in the "Loaders" directory.</li>
 </ol>
+
+<p>To orchestrate all this, there is a <a href="https://github.com/FlightControl-Master/MOOSE/blob/master/Loaders/MOOSE-Template.miz">MOOSE mission template</a> created, that you can use to create your first mission.
+In the triggers section, there is a flag (9999) that will decide how MOOSE will be loaded. When flag 9999 is set, MOOSE will be dynamically loaded. When flag 9999 is off, MOOSE will be loaded embedded. Note that when loaded embedded, <strong>your mission must include the last Moose_Embedded.lua file</strong>. So, ensure that the last file is included in the DO SCRIPT section when MOOSE got an update! </p>
 
 <h1>
 <a id="credits" class="anchor" href="#credits" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Credits</h1>
