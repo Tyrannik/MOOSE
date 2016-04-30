@@ -45,9 +45,9 @@ MOOSE is currently still in alpha version, but will evolve over time. Right now,
 <p>The goal of MOOSE is to allow mission designers to enhance their scripting with mission orchestration objects, which can be instantiated from defined classes within the framework. This will allow to write mission scripts with minimal code embedded. Of course, the richness of the framework will determine the richness of the misson scenarios. We can expect that MOOSE will evolve over time, as more missions will be designed within the framework.</p>
 
 <h1>
-<a id="classes" class="anchor" href="#classes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Classes</h1>
+<a id="moose-lua-classes" class="anchor" href="#moose-lua-classes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>MOOSE LUA Classes</h1>
 
-<p>The following classes are currently embedded within MOOSE:</p>
+<p>The following classes are currently embedded within MOOSE and can be included within your mission scripts:</p>
 
 <ul>
 <li><p><a href="Documentation/Base.html">BASE</a>: The main class from which all MOOSE classes are derived from. The BASE class contains essential functions to support inheritance and MOOSE object execution tracing (logging within the DCS.log file in the saved games folder of the user).</p></li>
@@ -55,6 +55,56 @@ MOOSE is currently still in alpha version, but will evolve over time. Right now,
 <li><p><a href="Documentation/Spawn.html">SPAWN</a>: Spawn new groups (and units) during mission execution.</p></li>
 <li><p><a href="Documentation/Escort.html">ESCORT</a>: Makes groups consisting of helicopters, airplanes, ground troops or ships within a mission joining your flight. You can control these groups through the ratio menu during your flight. Available commands are around: Navigation, Position Hold, Reporting (Target Detection), Attacking, Assisted Attacks, ROE, Evasion, Mission Execution and more ...</p></li>
 </ul>
+
+<h1>
+<a id="moose-tutorials-and-examples" class="anchor" href="#moose-tutorials-and-examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>MOOSE Tutorials and Examples</h1>
+
+<p>You can download <a href="https://github.com/FlightControl-Master/MOOSE/tree/master/Test%20Missions">test missions</a> to have examples and learn the syntax and usage of the MOOSE classes.</p>
+
+<p>There are <a href="https://www.youtube.com/channel/UCjrA9j5LQoWsG4SpS8i79Qg">Video Tutorials</a> on my YOUTUBE channel on which you can learn some coding aspects with mission execution demos, as well as some of the tooling and internal mechanisms within MOOSE.</p>
+
+<h1>
+<a id="moose-inclusion-and-usage" class="anchor" href="#moose-inclusion-and-usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>MOOSE Inclusion and Usage</h1>
+
+<p>MOOSE can be embedded within a Mission in two modes:</p>
+
+<ol>
+<li><p>Dynamic loading (this is preferred when you are developing a mission):</p></li>
+</ol>
+
+<ul>
+<li><p>You need to install MOOSE in your DCS World installation folder: :\Program Files\Eagle Dynamics\DCS World\Scripts<strong>\Moose</strong></p></li>
+<li><p>This directory needs to contain the lua files embedded in the Moose directory within the <a href="https://github.com/FlightControl-Mas...e/master/Moose">MOOSE package</a></p></li>
+<li><p>In order to load MOOSE dynamically in your mission, you need to execute a trigger containing a DO SCRIPT FILE of the <a href="https://github.com/FlightControl-Master/MOOSE/blob/master/Loaders/Moose_Load_Dynamic.lua">Moose_Load_Dynamic.lua</a> file. This file is also included in the MOOSE package in the "Loaders" directory.</p></li>
+</ul>
+
+<ol>
+<li>Embedded loading (once your mission is finsihed to be published):</li>
+<li>No MOOSE installation is required by those people flying or using your mission, as MOOSE is loaded as a whole embedded within the mission.</li>
+<li><p>In order to embed MOOSE within your mission, you need to execute a trigger containing a DO SCRIPT FILE of the <a href="https://github.com/FlightControl-Master/MOOSE/blob/master/Loaders/Moose_Load_Embedded.lua">Moose_Load_Embedded.lua</a> file. This file is also included in the MOOSE package in the "Loaders" directory.</p></li>
+<li><p>To orchestrate all this, there is a MOOSE mission template created, that you can use to create your first mission.
+In the triggers section, there is a flag (9999) that will decide how MOOSE will be loaded. When flag 9999 is set, MOOSE will be dynamically loaded. When flag 9999 is off, MOOSE will be loaded embedded. Note that when loaded embedded, <strong>your mission must include the last Moose_Embedded.lua file</strong>. So, ensure that the last file is included in the DO SCRIPT section when MOOSE got an update! </p></li>
+</ol>
+
+<h1>
+<a id="credits" class="anchor" href="#credits" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Credits</h1>
+
+<p>Note that the framework is based on code i've written myself, but some of it is also based on code that i've seen as great scripting code and ideas, and which i've revised. I see this framework evolving towards a broader public, and the ownership may dissapear (or parts of it). Consider this code public domain. Therefore a list of credits to all who have or are contributing (this list will increase over time):</p>
+
+<ol>
+<li><p>Grimes &amp; others:
+You'll notice that within this framework, there are functions used from mist. I've taken the liberty to copy those atomic mist functions that are very nice and useful, and copied those withini a separate file. It is not the intention to replace mist at all, it is just, the MOOSE framework approaches some of the same goals that mist has with a different technique, and therefore i've rewritten parts of mist using Object Oriented techniques. So, all credits to Grimes on mist. I've been debugging a lot of code within mist myself when i was using the script. Find the mist threat here:
+<a href="http://forums.eagle.ru/showthread.php?t=98616">http://forums.eagle.ru/showthread.php?t=98616</a></p></li>
+<li><p>Prof_hilactic &amp; others:
+SEAD Defenses. I've taken the script, and reworded it to fit within MOOSE. The script within MOOSE is hardly recognizable anymore from the original. Find here the posts: <a href="http://forums.eagle.ru/showpost.php?...59&amp;postcount=1">http://forums.eagle.ru/showpost.php?...59&amp;postcount=1</a></p></li>
+<li><p>xcom
+His contribution is related to the eStatHandler. I've analyzed and studied his scripts, and reworked it a bit to use it also within the framework (I've also tweaked it a bit). Find his post here: <a href="http://forums.eagle.ru/showpost.php?...73&amp;postcount=1">http://forums.eagle.ru/showpost.php?...73&amp;postcount=1</a></p></li>
+<li><p>The rest of the framework functions and class definitions were my own developments. Trust i've spent hours and hours investigating, trying and writing and documenting code building this framework.</p></li>
+</ol>
+
+<p>Note that there is a vast amount of other scripts out there. I may contact you personally to ask for your contribution / permission if i can use your idea or script to tweak it to the framework. Parts of these scripts will have to be redesigned to fit it into an OO framework.</p>
+
+<p>Hope you think the idea is great and useful.</p>
         </section>
 
         <aside id="sidebar">
