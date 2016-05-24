@@ -224,3 +224,5 @@ _gsdata_/
 #GITHUB
 .gitattributes
 .gitignore
+*.html
+*.html

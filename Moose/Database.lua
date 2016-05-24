@@ -82,18 +82,14 @@ DATABASE = {
     ClientsByID = {},
   },
   DCSUnits = {},
-  DCSUnitsAlive = {},
   DCSGroups = {},
-  DCSGroupsAlive = {},
-  Units = {},
-  UnitsAlive = {},
-  Groups = {},
-  GroupsAlive = {},
+  UNITS = {},
+  GROUPS = {},
   NavPoints = {},
   Statics = {},
   Players = {},
   PlayersAlive = {},
-  Clients = {},
+  CLIENTS = {},
   ClientsAlive = {},
   Filter = {
     Coalitions = nil,
@@ -161,167 +157,66 @@ function DATABASE:New()
   return self
 end
 
---- Builds a set of units of coalitons.
--- Possible current coalitions are red, blue and neutral.
+--- Finds a Unit based on the Unit Name.
 -- @param #DATABASE self
--- @param #string Coalitions Can take the following values: "red", "blue", "neutral".
--- @return #DATABASE self
-function DATABASE:FilterCoalitions( Coalitions )
-  if not self.Filter.Coalitions then
-    self.Filter.Coalitions = {}
-  end
-  if type( Coalitions ) ~= "table" then
-    Coalitions = { Coalitions }
-  end
-  for CoalitionID, Coalition in pairs( Coalitions ) do
-    self.Filter.Coalitions[Coalition] = Coalition
-  end
-  return self
+-- @param #string UnitName
+-- @return Unit#UNIT The found Unit.
+function DATABASE:FindUnit( UnitName )
+
+  local UnitFound = self.UNITS[UnitName]
+  return UnitFound
 end
 
---- Builds a set of units out of categories.
--- Possible current categories are plane, helicopter, ground, ship.
+--- Adds a Unit based on the Unit Name in the DATABASE.
 -- @param #DATABASE self
--- @param #string Categories Can take the following values: "plane", "helicopter", "ground", "ship".
--- @return #DATABASE self
-function DATABASE:FilterCategories( Categories )
-  if not self.Filter.Categories then
-    self.Filter.Categories = {}
-  end
-  if type( Categories ) ~= "table" then
-    Categories = { Categories }
-  end
-  for CategoryID, Category in pairs( Categories ) do
-    self.Filter.Categories[Category] = Category
-  end
-  return self
+function DATABASE:AddUnit( DCSUnit, DCSUnitName )
+
+  self.DCSUnits[DCSUnitName] = DCSUnit 
+  self.UNITS[DCSUnitName] = UNIT:Register( DCSUnitName )
 end
 
---- Builds a set of units of defined unit types.
--- Possible current types are those types known within DCS world.
+--- Deletes a Unit from the DATABASE based on the Unit Name.
 -- @param #DATABASE self
--- @param #string Types Can take those type strings known within DCS world.
--- @return #DATABASE self
-function DATABASE:FilterTypes( Types )
-  if not self.Filter.Types then
-    self.Filter.Types = {}
-  end
-  if type( Types ) ~= "table" then
-    Types = { Types }
-  end
-  for TypeID, Type in pairs( Types ) do
-    self.Filter.Types[Type] = Type
-  end
-  return self
+function DATABASE:DeleteUnit( DCSUnitName )
+
+  self.DCSUnits[DCSUnitName] = nil 
 end
 
---- Builds a set of units of defined countries.
--- Possible current countries are those known within DCS world.
+--- Finds a CLIENT based on the ClientName.
 -- @param #DATABASE self
--- @param #string Countries Can take those country strings known within DCS world.
--- @return #DATABASE self
-function DATABASE:FilterCountries( Countries )
-  if not self.Filter.Countries then
-    self.Filter.Countries = {}
-  end
-  if type( Countries ) ~= "table" then
-    Countries = { Countries }
-  end
-  for CountryID, Country in pairs( Countries ) do
-    self.Filter.Countries[Country] = Country
-  end
-  return self
+-- @param #string ClientName
+-- @return Client#CLIENT The found CLIENT.
+function DATABASE:FindClient( ClientName )
+
+  local ClientFound = self.CLIENTS[ClientName]
+  return ClientFound
 end
 
---- Builds a set of units of defined unit prefixes.
--- All the units starting with the given prefixes will be included within the set.
+--- Adds a CLIENT based on the ClientName in the DATABASE.
 -- @param #DATABASE self
--- @param #string Prefixes The prefix of which the unit name starts with.
--- @return #DATABASE self
-function DATABASE:FilterUnitPrefixes( Prefixes )
-  if not self.Filter.UnitPrefixes then
-    self.Filter.UnitPrefixes = {}
-  end
-  if type( Prefixes ) ~= "table" then
-    Prefixes = { Prefixes }
-  end
-  for PrefixID, Prefix in pairs( Prefixes ) do
-    self.Filter.UnitPrefixes[Prefix] = Prefix
-  end
-  return self
+function DATABASE:AddClient( ClientName )
+
+  self.CLIENTS[ClientName] = CLIENT:Register( ClientName )
+  self:E( self.CLIENTS[ClientName]:GetClassNameAndID() )
 end
 
---- Builds a set of units of defined group prefixes.
--- All the units starting with the given group prefixes will be included within the set.
+--- Finds a GROUP based on the GroupName.
 -- @param #DATABASE self
--- @param #string Prefixes The prefix of which the group name where the unit belongs to starts with.
--- @return #DATABASE self
-function DATABASE:FilterGroupPrefixes( Prefixes )
-  if not self.Filter.GroupPrefixes then
-    self.Filter.GroupPrefixes = {}
-  end
-  if type( Prefixes ) ~= "table" then
-    Prefixes = { Prefixes }
-  end
-  for PrefixID, Prefix in pairs( Prefixes ) do
-    self.Filter.GroupPrefixes[Prefix] = Prefix
-  end
-  return self
+-- @param #string GroupName
+-- @return Group#GROUP The found GROUP.
+function DATABASE:FindGroup( GroupName )
+
+  local GroupFound = self.GROUPS[GroupName]
+  return GroupFound
 end
 
---- Starts the filtering.
+--- Adds a GROUP based on the GroupName in the DATABASE.
 -- @param #DATABASE self
--- @return #DATABASE self
-function DATABASE:FilterStart()
+function DATABASE:AddGroup( DCSGroup, GroupName )
 
-  if _DATABASE then
-    -- OK, we have a _DATABASE
-    -- Now use the different filters to build the set.
-    -- We first take ALL of the Units of the _DATABASE.
-    
-    self:E( { "Adding Database Datapoints with filters" } )
-    for DCSUnitName, DCSUnit in pairs( _DATABASE.DCSUnits ) do
-
-      if self:_IsIncludeDCSUnit( DCSUnit ) then
-
-        self:E( { "Adding Unit:", DCSUnitName } )
-        self.DCSUnits[DCSUnitName] = _DATABASE.DCSUnits[DCSUnitName]
-        self.Units[DCSUnitName] = _DATABASE.Units[DCSUnitName]
-        
-        if _DATABASE.DCSUnitsAlive[DCSUnitName] then
-          self.DCSUnitsAlive[DCSUnitName] = _DATABASE.DCSUnitsAlive[DCSUnitName]
-          self.UnitsAlive[DCSUnitName] = _DATABASE.UnitsAlive[DCSUnitName]
-        end
-        
-      end
-    end
-    
-    for DCSGroupName, DCSGroup in pairs( _DATABASE.DCSGroups ) do
-      
-      --if self:_IsIncludeDCSGroup( DCSGroup ) then
-      self:E( { "Adding Group:", DCSGroupName } )
-      self.DCSGroups[DCSGroupName] = _DATABASE.DCSGroups[DCSGroupName]
-      self.Groups[DCSGroupName] = _DATABASE.Groups[DCSGroupName]
-      --end
-      
-      if _DATABASE.DCSGroupsAlive[DCSGroupName] then
-        self.DCSGroupsAlive[DCSGroupName] = _DATABASE.DCSGroupsAlive[DCSGroupName]
-        self.GroupsAlive[DCSGroupName] = _DATABASE.GroupsAlive[DCSGroupName]
-      end
-    end
-
-    for DCSUnitName, Client in pairs( _DATABASE.Clients ) do
-      self:E( { "Adding Client for Unit:", DCSUnitName } )
-      self.Clients[DCSUnitName] = _DATABASE.Clients[DCSUnitName]
-    end
-    
-  else
-    self:E( "There is a structural error in MOOSE. No _DATABASE has been defined! Cannot build this custom DATABASE." )
-  end
-  
-  return self
+  self.DCSGroups[GroupName] = DCSGroup
+  self.GROUPS[GroupName] = GROUP:Register( GroupName )
 end
-
 
 --- Instantiate new Groups within the DCSRTE.
 -- This method expects EXACTLY the same structure as a structure within the ME, and needs 2 additional fields defined:
@@ -354,7 +249,7 @@ function DATABASE:Spawn( SpawnTemplate )
   SpawnTemplate.SpawnCategoryID = SpawnCategoryID
 
 
-  local SpawnGroup = GROUP:New( Group.getByName( SpawnTemplate.name ) )
+  local SpawnGroup = GROUP:Register( SpawnTemplate.name )
   return SpawnGroup
 end
 
@@ -449,46 +344,36 @@ end
 -- @return #DATABASE self
 function DATABASE:_RegisterDatabase()
 
-  local CoalitionsData = { AlivePlayersRed = coalition.getGroups( coalition.side.RED ), AlivePlayersBlue = coalition.getGroups( coalition.side.BLUE ) }
+  local CoalitionsData = { GroupsRed = coalition.getGroups( coalition.side.RED ), GroupsBlue = coalition.getGroups( coalition.side.BLUE ) }
   for CoalitionId, CoalitionData in pairs( CoalitionsData ) do
     for DCSGroupId, DCSGroup in pairs( CoalitionData ) do
 
-      local DCSGroupName = DCSGroup:getName()
+      if DCSGroup:isExist() then
+        local DCSGroupName = DCSGroup:getName()
+  
+        self:E( { "Register Group:", DCSGroup, DCSGroupName } )
+        self:AddGroup( DCSGroup, DCSGroupName )
 
-      self:E( { "Register Group:", DCSGroup, DCSGroupName } )
-      self.DCSGroups[DCSGroupName] = DCSGroup
-      self.Groups[DCSGroupName] = GROUP:New( DCSGroup )
-
-      if self:_IsAliveDCSGroup(DCSGroup) then
-        self:E( { "Register Alive Group:", DCSGroup, DCSGroupName } )
-        self.DCSGroupsAlive[DCSGroupName] = DCSGroup
-        self.GroupsAlive[DCSGroupName] = self.Groups[DCSGroupName]  
-      end
-
-      for DCSUnitId, DCSUnit in pairs( DCSGroup:getUnits() ) do
-
-        local DCSUnitName = DCSUnit:getName()
-        self:E( { "Register Unit:", DCSUnit, DCSUnitName } )
-
-        self.DCSUnits[DCSUnitName] = DCSUnit
-        self.Units[DCSUnitName] = UNIT:New( DCSUnit )
-
-        if self:_IsAliveDCSUnit(DCSUnit) then
-          self:E( { "Register Alive Unit:", DCSUnit, DCSUnitName } )
-          self.DCSUnitsAlive[DCSUnitName] = DCSUnit
-          self.UnitsAlive[DCSUnitName] = self.Units[DCSUnitName]  
+        for DCSUnitId, DCSUnit in pairs( DCSGroup:getUnits() ) do
+  
+          local DCSUnitName = DCSUnit:getName()
+          self:E( { "Register Unit:", DCSUnit, DCSUnitName } )
+          self:AddUnit( DCSUnit, DCSUnitName )
         end
+      else
+        self:E( { "Group does not exist: ",  DCSGroup } )
       end
       
-      for ClientName, ClientTemplate in pairs( self.Templates.ClientsByName ) do
-        self.Clients[ClientName] = CLIENT:New( ClientName )
-      end
     end
+  end
+
+  for ClientName, ClientTemplate in pairs( self.Templates.ClientsByName ) do
+    self:E( { "Adding Client:", ClientName } )
+    self:AddClient( ClientName )
   end
   
   return self
 end
-
 
 --- Events
 
@@ -500,15 +385,8 @@ function DATABASE:_EventOnBirth( Event )
 
   if Event.IniDCSUnit then
     if self:_IsIncludeDCSUnit( Event.IniDCSUnit ) then
-      self.DCSUnits[Event.IniDCSUnitName] = Event.IniDCSUnit 
-      self.DCSUnitsAlive[Event.IniDCSUnitName] = Event.IniDCSUnit
-      self.Units[Event.IniDCSUnitName] = UNIT:New( Event.IniDCSUnit )
-      
-      --if not self.DCSGroups[Event.IniDCSGroupName] then
-      --  self.DCSGroups[Event.IniDCSGroupName] = Event.IniDCSGroupName
-      --  self.DCSGroupsAlive[Event.IniDCSGroupName] = Event.IniDCSGroupName
-      --  self.Groups[Event.IniDCSGroupName] = GROUP:New( Event.IniDCSGroup )
-      --end
+      self:AddUnit( Event.IniDCSUnit, Event.IniDCSUnitName )
+      self:AddGroup( Event.IniDCSGroup, Event.IniDCSGroupName )
       self:_EventOnPlayerEnterUnit( Event )
     end
   end
@@ -521,9 +399,9 @@ function DATABASE:_EventOnDeadOrCrash( Event )
   self:F( { Event } )
 
   if Event.IniDCSUnit then
-    if self.DCSUnitsAlive[Event.IniDCSUnitName] then
-      self.DCSUnits[Event.IniDCSUnitName] = nil 
-      self.DCSUnitsAlive[Event.IniDCSUnitName] = nil
+    if self.DCSUnits[Event.IniDCSUnitName] then
+      self:DeleteUnit( Event.IniDCSUnitName )
+      -- add logic to correctly remove a group once all units are destroyed...
     end
   end
 end
@@ -539,7 +417,7 @@ function DATABASE:_EventOnPlayerEnterUnit( Event )
       if not self.PlayersAlive[Event.IniDCSUnitName] then
         self:E( { "Add player for unit:", Event.IniDCSUnitName, Event.IniDCSUnit:getPlayerName() } )
         self.PlayersAlive[Event.IniDCSUnitName] = Event.IniDCSUnit:getPlayerName()
-        self.ClientsAlive[Event.IniDCSUnitName] = _DATABASE.Clients[ Event.IniDCSUnitName ]
+        self.ClientsAlive[Event.IniDCSUnitName] = self.CLIENTS[ Event.IniDCSUnitName ]
       end
     end
   end
@@ -611,10 +489,10 @@ end
 -- @param #DATABASE self
 -- @param #function IteratorFunction The function that will be called when there is an alive unit in the database. The function needs to accept a UNIT parameter.
 -- @return #DATABASE self
-function DATABASE:ForEachDCSUnitAlive( IteratorFunction, ... )
+function DATABASE:ForEachDCSUnit( IteratorFunction, ... )
   self:F( arg )
   
-  self:ForEach( IteratorFunction, arg, self.DCSUnitsAlive )
+  self:ForEach( IteratorFunction, arg, self.DCSUnits )
 
   return self
 end
@@ -639,7 +517,7 @@ end
 function DATABASE:ForEachClient( IteratorFunction, ... )
   self:F( arg )
   
-  self:ForEach( IteratorFunction, arg, self.Clients )
+  self:ForEach( IteratorFunction, arg, self.CLIENTS )
 
   return self
 end
@@ -649,7 +527,7 @@ function DATABASE:ScanEnvironment()
   self:F()
 
   self.Navpoints = {}
-  self.Units = {}
+  self.UNITS = {}
   --Build routines.db.units and self.Navpoints
   for coa_name, coa_data in pairs(env.mission.coalition) do
 
@@ -822,7 +700,6 @@ function DATABASE:TraceDatabase()
   self:F()
   
   self:T( { "DCSUnits:", self.DCSUnits } )
-  self:T( { "DCSUnitsAlive:", self.DCSUnitsAlive } )
 end
 
 

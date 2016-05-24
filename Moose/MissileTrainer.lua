@@ -26,9 +26,9 @@
 --     * **Frequency Decrease**: Decreases the missile tracking message frequency with one second.
 --  * **Alerts**: Menu to configure alert messages.
 --     * **To All**: Shows alert messages to all players.
---     * **To Target**: Shows alter messages only to the player where the missile is (was) targetted at.
+--     * **To Target**: Shows alert messages only to the player where the missile is (was) targetted at.
 --     * **Hits On**: Show missile hit alert messages.
---     * **Hits Off**: Disable missile hit altert messages.
+--     * **Hits Off**: Disable missile hit alert messages.
 --     * **Launches On**: Show missile launch messages.
 --     * **Launches Off**: Disable missile launch messages.
 --  * **Details**: Menu to configure message details.
@@ -84,10 +84,15 @@ MISSILETRAINER = {
 -- When a missile is fired a SCHEDULER is set off that follows the missile. When near a certain a client player, the missile will be destroyed.
 -- @param #MISSILETRAINER self
 -- @param #number Distance The distance in meters when a tracked missile needs to be destroyed when close to a player.
+-- @param #string Briefing (Optional) Will show a text to the players when starting their mission. Can be used for briefing purposes. 
 -- @return #MISSILETRAINER
-function MISSILETRAINER:New( Distance )
+function MISSILETRAINER:New( Distance, Briefing )
   local self = BASE:Inherit( self, BASE:New() )
   self:F( Distance )
+
+  if Briefing then
+    self.Briefing = Briefing
+  end
 
   self.Schedulers = {}
   self.SchedulerID = 0
@@ -107,7 +112,9 @@ function MISSILETRAINER:New( Distance )
 
     local function _Alive( Client )
 
-      Client:Message( "Hello trainee, welcome to the Missile Trainer.\nGood luck!", 15, "HELLO WORLD", "Trainer" )
+      if self.Briefing then
+        Client:Message( self.Briefing, 15, "HELLO WORLD", "Trainer" )
+      end
 
       if self.MenusOnOff == true then
         Client:Message( "Use the 'Radio Menu' -> 'Other (F10)' -> 'Missile Trainer' menu options to change the Missile Trainer settings (for all players).", 15, "MENU", "Trainer" )
@@ -445,8 +452,8 @@ function MISSILETRAINER:_EventShot( Event )
   local Client = self.DBClients[TrainerTargetDCSUnitName]
   if Client then
 
-    local TrainerSourceUnit = UNIT:New(TrainerSourceDCSUnit)
-    local TrainerTargetUnit = UNIT:New(TrainerTargetDCSUnit)
+    local TrainerSourceUnit = UNIT:Find( TrainerSourceDCSUnit )
+    local TrainerTargetUnit = UNIT:Find( TrainerTargetDCSUnit )
 
     if self.MessagesOnOff == true and self.AlertsLaunchesOnOff == true then
 
@@ -482,7 +489,7 @@ function MISSILETRAINER:_AddRange( Client, TrainerWeapon )
   if self.DetailsRangeOnOff then
 
     local PositionMissile = TrainerWeapon:getPoint()
-    local PositionTarget = Client:GetPositionVec3()
+    local PositionTarget = Client:GetPointVec3()
 
     local Range = ( ( PositionMissile.x - PositionTarget.x )^2 +
       ( PositionMissile.y - PositionTarget.y )^2 +
@@ -502,7 +509,7 @@ function MISSILETRAINER:_AddBearing( Client, TrainerWeapon )
   if self.DetailsBearingOnOff then
 
     local PositionMissile = TrainerWeapon:getPoint()
-    local PositionTarget = Client:GetPositionVec3()
+    local PositionTarget = Client:GetPointVec3()
 
     self:T2( { PositionTarget, PositionMissile })
 
@@ -550,7 +557,7 @@ function MISSILETRAINER:_TrackMissiles()
   
       if Client and Client:IsAlive() and TrainerSourceUnit and TrainerSourceUnit:IsAlive() and TrainerWeapon and TrainerWeapon:isExist() and TrainerTargetUnit and TrainerTargetUnit:IsAlive() then
         local PositionMissile = TrainerWeapon:getPosition().p
-        local PositionTarget = Client:GetPositionVec3()
+        local PositionTarget = Client:GetPointVec3()
   
         local Distance = ( ( PositionMissile.x - PositionTarget.x )^2 +
           ( PositionMissile.y - PositionTarget.y )^2 +
