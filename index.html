@@ -31,10 +31,9 @@
           <h1>
 <a id="context" class="anchor" href="#context" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Context</h1>
 
-<p>A development has been ongoing for a while now, which allows to create missions quickly using an Object Oriented Framework developed in lua.
+<p>MOOSE is a <strong>M</strong>ission <strong>O</strong>bject <strong>O</strong>riented <strong>S</strong>cripting <strong>E</strong>nvironment, and is meant for mission designers and mission hosters.
+It allows to quickly setup complex missions using pre-scripted scenarios using the available classes within the MOOSE Framework.
 MOOSE is currently still in alpha version, but will evolve over time. Right now, it has been updated to work with DCS world 1.5.</p>
-
-<p>MOOSE is a <strong>M</strong>ission <strong>O</strong>bject <strong>O</strong>riented <strong>S</strong>cripting <strong>E</strong>nvironment, and is meant for mission designers and mission hosters. It allows to quickly setup complex missions using pre-scripted scenarios using the available classes within the framework.</p>
 
 <p>You can find the source of MOOSE here on GITHUB. It is free for download: 
 <a href="https://github.com/FlightControl-Master/MOOSE/">https://github.com/FlightControl-Master/MOOSE/</a></p>
@@ -45,19 +44,39 @@ MOOSE is currently still in alpha version, but will evolve over time. Right now,
 <p>The goal of MOOSE is to allow mission designers to enhance their scripting with mission orchestration objects, which can be instantiated from defined classes within the framework. This will allow to write mission scripts with minimal code embedded. Of course, the richness of the framework will determine the richness of the misson scenarios. We can expect that MOOSE will evolve over time, as more missions will be designed within the framework.</p>
 
 <h1>
+<a id="mission-design-with-moose" class="anchor" href="#mission-design-with-moose" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Mission Design with Moose</h1>
+
+<p>In order to create a mission using MOOSE, you'll have to include a file named <strong>Moose.lua</strong>:</p>
+
+<ol>
+<li>Create a new mission in the DCS World Mission Editor.</li>
+<li>In the mission editor, create a new trigger.</li>
+<li>Name the trigger Moose Load and let it execute only at MISSION START.</li>
+<li>Add an action DO SCRIPT FILE (without a condition, so the middle column must be empty).</li>
+<li>In the action, browse to the <strong><a href="https://github.com/FlightControl-Master/MOOSE/tree/master/Moose%20Mission%20Setup">Moose.lua</a></strong> file in the <strong>Moose Mission Setup</strong> directory, and include this file within your mission.</li>
+<li>Make sure that the "Moose Load" trigger is completely at the top of your mission.</li>
+</ol>
+
+<p>Voila, MOOSE is now included in your mission. During the execution of this mission, all MOOSE classes will be loaded, and all MOOSE initializations will be exectuted before any other mission action is executed.</p>
+
+<p>IMPORTANT NOTE: When a new version of MOOSE is released, you'll have to UPDATE the Moose.lua file in EACH OF YOUR MISSION.
+This can be a tedious task, and for this purpose, a tool has been developed that will update the Moose.lua files automatically within your missions.
+Refer to the tool at <a href="https://github.com/FlightControl-Master/MOOSE/tree/master/Moose%20Mission%20Setup/Moose%20Mission%20Update">Moose Mission Setup\Moose Mission Update</a> directory for further information included in the <a href="">READ.ME</a> file.</p>
+
+<h1>
 <a id="moose-lua-classes" class="anchor" href="#moose-lua-classes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>MOOSE LUA Classes</h1>
 
 <p>The following classes are currently embedded within MOOSE and can be included within your mission scripts:</p>
 
 <ul>
-<li><p><a href="Documentation/Base.html">BASE</a>: The main class from which all MOOSE classes are derived from. The BASE class contains essential functions to support inheritance and MOOSE object execution tracing (logging within the DCS.log file in the saved games folder of the user).</p></li>
-<li><p><a href="Documentation/Group.html">GROUP</a>: This class wraps a DCS Group object within the simulator. It provides a more extensive API set, as well takes an abstraction of the complexity to give tasks, commands and set various options to DCS Groups. Additionally, the GROUP class provides a much richer API to identify various properties of the DCS Group. For each DCS Group created object within a running mission, a GROUP object will be created automatically, that is managed within the DATABASE, under the _DATABASE object.</p></li>
-<li><p><a href="Documentation/Unit.html">UNIT</a>: This class wraps a DCS Unit object within the simulator. It provides a more extensive API set, as well takes an abstraction of the complexity to give commands and set various options to DCS Units. Additionally, the UNIT class provides a much richer API to identify various properties of the DCS Unit. For each DCS Unit object created within a running mission, a UNIT object will be created automatically, that is stored within the DATABASE, under the _DATABASE object.</p></li>
-<li><p><a href="Documentation/Client.html">CLIENT</a>: This class wraps a DCS Unit object within the simulator, which has a skill Client or Player. The CLIENT class derives from the UNIT class, thus contains the complete UNIT API set, and additionally, the CLIENT class provides an API set to manage players joining or leaving clients, sending messages to players, and manage the state of units joined by players. For each DCS Unit object created within a running mission that can be joined by a player, a CLIENT object will be created automatically, that is stored within the DATABASE, under the _DATABASE object.</p></li>
-<li><p><a href="Documentation/Database.html">DATABASE</a>: Creates a collection of GROUPS[], UNITS[], CLIENTS[] and managed these sets automatically. Provides an API set to retrieve a GROUP, UNIT or CLIENT instance from the _DATABASE object using defined APIs. The collections are maintained dynamically during the execution of the mission, so when players join, leave, when units are created or destroyed, the collections are dynamically updated.</p></li>
-<li><p><a href="Documentation/Spawn.html">SPAWN</a>: Spawn new groups (and units) during mission execution.</p></li>
-<li><p><a href="Documentation/Escort.html">ESCORT</a>: Makes groups consisting of helicopters, airplanes, ground troops or ships within a mission joining your flight. You can control these groups through the ratio menu during your flight. Available commands are around: Navigation, Position Hold, Reporting (Target Detection), Attacking, Assisted Attacks, ROE, Evasion, Mission Execution and more ...</p></li>
-<li><p><a href="Documentation/MissileTrainer.html">MISSILETRAINER</a>: Missile trainer, it destroys missiles when they are within a certain range of player airplanes, displays tracking and alert messages of missile launches; approach; destruction, and configure with radio menu commands. Various APIs available to configure the trainer.</p></li>
+<li><p><a href="Moose%20Training/Documentation/Base.html">BASE</a>: The main class from which all MOOSE classes are derived from. The BASE class contains essential functions to support inheritance and MOOSE object execution tracing (logging within the DCS.log file in the saved games folder of the user).</p></li>
+<li><p><a href="Moose%20Training/Documentation/Group.html">GROUP</a>: This class wraps a DCS Group object within the simulator. It provides a more extensive API set, as well takes an abstraction of the complexity to give tasks, commands and set various options to DCS Groups. Additionally, the GROUP class provides a much richer API to identify various properties of the DCS Group. For each DCS Group created object within a running mission, a GROUP object will be created automatically, that is managed within the DATABASE, under the _DATABASE object.</p></li>
+<li><p><a href="Moose%20Training/Documentation/Unit.html">UNIT</a>: This class wraps a DCS Unit object within the simulator. It provides a more extensive API set, as well takes an abstraction of the complexity to give commands and set various options to DCS Units. Additionally, the UNIT class provides a much richer API to identify various properties of the DCS Unit. For each DCS Unit object created within a running mission, a UNIT object will be created automatically, that is stored within the DATABASE, under the _DATABASE object.</p></li>
+<li><p><a href="Moose%20Training/Documentation/Client.html">CLIENT</a>: This class wraps a DCS Unit object within the simulator, which has a skill Client or Player. The CLIENT class derives from the UNIT class, thus contains the complete UNIT API set, and additionally, the CLIENT class provides an API set to manage players joining or leaving clients, sending messages to players, and manage the state of units joined by players. For each DCS Unit object created within a running mission that can be joined by a player, a CLIENT object will be created automatically, that is stored within the DATABASE, under the _DATABASE object.</p></li>
+<li><p><a href="Moose%20Training/Documentation/Database.html">DATABASE</a>: Creates a collection of GROUPS[], UNITS[], CLIENTS[] and managed these sets automatically. Provides an API set to retrieve a GROUP, UNIT or CLIENT instance from the _DATABASE object using defined APIs. The collections are maintained dynamically during the execution of the mission, so when players join, leave, when units are created or destroyed, the collections are dynamically updated.</p></li>
+<li><p><a href="Moose%20Training/Documentation/Spawn.html">SPAWN</a>: Spawn new groups (and units) during mission execution.</p></li>
+<li><p><a href="Moose%20Training/Documentation/Escort.html">ESCORT</a>: Makes groups consisting of helicopters, airplanes, ground troops or ships within a mission joining your flight. You can control these groups through the ratio menu during your flight. Available commands are around: Navigation, Position Hold, Reporting (Target Detection), Attacking, Assisted Attacks, ROE, Evasion, Mission Execution and more ...</p></li>
+<li><p><a href="Moose%20Training/Documentation/MissileTrainer.html">MISSILETRAINER</a>: Missile trainer, it destroys missiles when they are within a certain range of player airplanes, displays tracking and alert messages of missile launches; approach; destruction, and configure with radio menu commands. Various APIs available to configure the trainer.</p></li>
 </ul>
 
 <h1>
@@ -67,29 +86,7 @@ MOOSE is currently still in alpha version, but will evolve over time. Right now,
 
 <p>There are <a href="https://www.youtube.com/channel/UCjrA9j5LQoWsG4SpS8i79Qg">Video Tutorials</a> on my YOUTUBE channel on which you can learn some coding aspects with mission execution demos, as well as some of the tooling and internal mechanisms within MOOSE.</p>
 
-<h1>
-<a id="moose-inclusion-and-usage" class="anchor" href="#moose-inclusion-and-usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>MOOSE Inclusion and Usage</h1>
-
-<p>MOOSE can be embedded within a Mission in two modes:</p>
-
-<ol>
-<li><p>Dynamic loading (this is preferred when you are developing a mission):</p></li>
-</ol>
-
-<ul>
-<li><p>You need to install MOOSE in your DCS World installation folder: :\Program Files\Eagle Dynamics\DCS World\Scripts<strong>\Moose</strong></p></li>
-<li><p>This directory needs to contain the lua files embedded in the Moose directory within the <a href="https://github.com/FlightControl-Mas...e/master/Moose">MOOSE package</a></p></li>
-<li><p>In order to load MOOSE dynamically in your mission, you need to execute a trigger containing a DO SCRIPT FILE of the <a href="https://github.com/FlightControl-Master/MOOSE/blob/master/Loaders/Moose_Load_Dynamic.lua">Moose_Load_Dynamic.lua</a> file. This file is also included in the MOOSE package in the "Loaders" directory.</p></li>
-</ul>
-
-<ol>
-<li>Embedded loading (once your mission is finsihed to be published):</li>
-<li>No MOOSE installation is required by those people flying or using your mission, as MOOSE is loaded as a whole embedded within the mission.</li>
-<li>In order to embed MOOSE within your mission, you need to execute a trigger containing a DO SCRIPT FILE of the <a href="https://github.com/FlightControl-Master/MOOSE/blob/master/Loaders/Moose_Load_Embedded.lua">Moose_Load_Embedded.lua</a> file. This file is also included in the MOOSE package in the "Loaders" directory.</li>
-</ol>
-
-<p>To orchestrate all this, there is a <a href="https://github.com/FlightControl-Master/MOOSE/blob/master/Loaders/MOOSE-Template.miz">MOOSE mission template</a> created, that you can use to create your first mission.
-In the triggers section, there is a flag (9999) that will decide how MOOSE will be loaded. When flag 9999 is set, MOOSE will be dynamically loaded. When flag 9999 is off, MOOSE will be loaded embedded. Note that when loaded embedded, <strong>your mission must include the last Moose_Embedded.lua file</strong>. So, ensure that the last file is included in the DO SCRIPT section when MOOSE got an update! </p>
+<p>In the triggers section, there is a flag (9999) that will decide how MOOSE will be loaded. When flag 9999 is set, MOOSE will be dynamically loaded. When flag 9999 is off, MOOSE will be loaded embedded. Note that when loaded embedded, <strong>your mission must include the last Moose_Embedded.lua file</strong>. So, ensure that the last file is included in the DO SCRIPT section when MOOSE got an update! </p>
 
 <h1>
 <a id="credits" class="anchor" href="#credits" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Credits</h1>
