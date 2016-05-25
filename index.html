@@ -46,6 +46,16 @@ MOOSE is currently still in alpha version, but will evolve over time. Right now,
 <p>The goal of MOOSE is to allow mission designers to enhance their scripting with mission orchestration objects, which can be instantiated from defined classes within the framework. This will allow to write mission scripts with minimal code embedded. Of course, the richness of the framework will determine the richness of the misson scenarios. We can expect that MOOSE will evolve over time, as more missions will be designed within the framework.</p>
 
 <h1>
+<a id="moose-directory-structure" class="anchor" href="#moose-directory-structure" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>MOOSE Directory Structure</h1>
+
+<ul>
+<li>Moose Development: Contains the collection of lua files that define the MOOSE classes. You can use this directory to build the dynamic luadoc documentation intellisense in your eclipse development environment.</li>
+<li>Moose Mission Setup: Contains the Moose.lua file to be included in your scripts when using MOOSE classes (see below the point Mission Design with Moose).</li>
+<li>Moose Test Missions: Contains a directory structure with Moose Test Missions and examples. In each directory, you will find a miz file and a lua file containing the main mission script.</li>
+<li>Moose Training: Contains the documentation of Moose generated with luadoc from the Moose source code. The presentations used during the videos in my <a href="https://www.youtube.com/channel/UCjrA9j5LQoWsG4SpS8i79Qg">youtube channel</a>, are also to be found here.</li>
+</ul>
+
+<h1>
 <a id="mission-design-with-moose" class="anchor" href="#mission-design-with-moose" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Mission Design with Moose</h1>
 
 <p>In order to create a mission using MOOSE, you'll have to include a file named <strong>Moose.lua</strong>:</p>
