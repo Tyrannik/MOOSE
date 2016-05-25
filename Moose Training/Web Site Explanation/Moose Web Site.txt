@@ -44,6 +44,8 @@ The following classes are currently embedded within MOOSE and can be included wi
 
 * [BASE](Moose Training/Documentation/Base.html): The main class from which all MOOSE classes are derived from. The BASE class contains essential functions to support inheritance and MOOSE object execution tracing (logging within the DCS.log file in the saved games folder of the user).
 
+* [SCHEDULER](Moose Training/Documentation/Scheduler.html): This class implements a timer scheduler that will call at optional specified intervals repeatedly or just one time a scheduled function.
+
 * [GROUP](Moose Training/Documentation/Group.html): This class wraps a DCS Group object within the simulator. It provides a more extensive API set, as well takes an abstraction of the complexity to give tasks, commands and set various options to DCS Groups. Additionally, the GROUP class provides a much richer API to identify various properties of the DCS Group. For each DCS Group created object within a running mission, a GROUP object will be created automatically, that is managed within the DATABASE, under the _DATABASE object.
 
 * [UNIT](Moose Training/Documentation/Unit.html): This class wraps a DCS Unit object within the simulator. It provides a more extensive API set, as well takes an abstraction of the complexity to give commands and set various options to DCS Units. Additionally, the UNIT class provides a much richer API to identify various properties of the DCS Unit. For each DCS Unit object created within a running mission, a UNIT object will be created automatically, that is stored within the DATABASE, under the _DATABASE object.
