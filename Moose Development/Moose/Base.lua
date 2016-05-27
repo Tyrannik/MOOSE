@@ -116,7 +116,6 @@ FORMATION = {
 --     return self
 -- end
 -- @todo need to investigate if the deepCopy is really needed... Don't think so.
-
 function BASE:New()
 	local Child = routines.utils.deepCopy( self )
 	local Parent = {}
@@ -488,7 +487,10 @@ function BASE:E( Arguments )
 	end
 
 	local LineCurrent = DebugInfoCurrent.currentline
-	local LineFrom = DebugInfoFrom.currentline
+  local LineFrom = -1 
+	if DebugInfoFrom then
+	  LineFrom = DebugInfoFrom.currentline
+	end
 
 	env.info( string.format( "%6d(%6d)/%1s:%20s%05d.%s(%s)" , LineCurrent, LineFrom, "E", self.ClassName, self.ClassID, Function, routines.utils.oneLineSerialize( Arguments ) ) )
 end
