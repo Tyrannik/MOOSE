@@ -48,15 +48,13 @@ The following classes are currently embedded within MOOSE and can be included wi
 
 * [GROUP](Moose Training/Documentation/Group.html): This class wraps a DCS Group object within the simulator. It provides a more extensive API set, as well takes an abstraction of the complexity to give tasks, commands and set various options to DCS Groups. Additionally, the GROUP class provides a much richer API to identify various properties of the DCS Group. For each DCS Group created object within a running mission, a GROUP object will be created automatically, that is managed within the DATABASE, under the _DATABASE object.
 
-* [GROUPSET](Moose Training/Documentation/GroupSet.html): Builds dynamically a SET of GROUP objects. The SET can be filtered with defined filter criteria. Iterators are available that iterate through the GROUPSET, calling a function for each GROUP in the GROUPSET.
-
 * [UNIT](Moose Training/Documentation/Unit.html): This class wraps a DCS Unit object within the simulator. It provides a more extensive API set, as well takes an abstraction of the complexity to give commands and set various options to DCS Units. Additionally, the UNIT class provides a much richer API to identify various properties of the DCS Unit. For each DCS Unit object created within a running mission, a UNIT object will be created automatically, that is stored within the DATABASE, under the _DATABASE object.
-
-* [UNITSET](Moose Training/Documentation/UnitSet.html): Builds dynamically a SET of UNIT objects. The SET can be filtered with defined filter criteria. Iterators are available that iterate through the UNITSET, calling a function for each UNIT in the UNITSET.
 
 * [CLIENT](Moose Training/Documentation/Client.html): This class wraps a DCS Unit object within the simulator, which has a skill Client or Player. The CLIENT class derives from the UNIT class, thus contains the complete UNIT API set, and additionally, the CLIENT class provides an API set to manage players joining or leaving clients, sending messages to players, and manage the state of units joined by players. For each DCS Unit object created within a running mission that can be joined by a player, a CLIENT object will be created automatically, that is stored within the DATABASE, under the _DATABASE object.
 
 * [STATIC](Moose Training/Documentation/Static.html): This class wraps a DCS StaticObject object within the simulator. The STATIC class derives from the UNIT class, thus contains the complete UNIT API set.
+
+* [SETS](Moose Training/Documentation/Set.html): Builds dynamically a SET of objects. The SET can be filtered with defined filter criteria. Iterators are available that iterate through the GROUPSET, calling a function for each object within the SET.
 
 * [POINTS](Moose Training/Documentation/Point.html): A set of point classes that provide the functionality to define points within the simulator, either 2D or 3D. These points have enriched functionality, like smoking, flaring and other functions.
 
