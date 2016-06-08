@@ -741,6 +741,11 @@ ol {
   padding-left: 3px;
 }
 
+dl dd {
+  font-style: italic;
+  font-weight: 100;
+}
+
 footer {
   padding-top: 20px;
   padding-bottom: 30px;
@@ -966,7 +971,6 @@ footer a:hover {
 
 #content h2 a {
   color: #000;
-  border-bottom: 1px solid #000;
 }
 
 #content h2 a code {
@@ -1008,28 +1012,3 @@ table.function_list td {
 
 table.function_list td.name { font-weight: 400; width:50%; white-space: normal; text-align:left;}
 table.function_list td.summary { width: 50%; }
-
-
-dl.table dt, dl.function {
-	border-left: 1px solid #ccc; 
-	border-right: 1px solid #ccc; 
-	border-bottom: 1px solid #ccc;
-}
-
-dl.table dt, dl.function dt {
-	border-top: 1px solid #000; 
-	padding-top: 0.5em; 
-	padding-bottom: 0.5em;   
-	border-bottom: 1px solid #ccc; 
-}
-
-dl.table dd, dl.function dd {
-	padding-bottom: 0.5em; 
-	margin: 20px 0 0 20px;
-}
-
-dl.table dd, dl.function dd p {
-	font-weight : normal;
-}
-
-dl.table h3, dl.function h3 {font-size: 1.5em;}
