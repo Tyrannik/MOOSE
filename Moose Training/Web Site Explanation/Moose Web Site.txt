@@ -56,6 +56,8 @@ The following classes are currently embedded within MOOSE and can be included wi
 
 * [SETS](Moose Training/Documentation/Set.html): Builds dynamically a SET of objects. The SET can be filtered with defined filter criteria. Iterators are available that iterate through the GROUPSET, calling a function for each object within the SET.
 
+* [MESSAGE](Moose Training/Documentation/Message.html): A message system, displaying messages to Clients, Coalitions or All players. 
+
 * [POINTS](Moose Training/Documentation/Point.html): A set of point classes that provide the functionality to define points within the simulator, either 2D or 3D. These points have enriched functionality, like smoking, flaring and other functions.
 
 * [ZONES](Moose Training/Documentation/Zone.html): A set of zone classes that provide the functionality to validate the presence of GROUPS, UNITS, CLIENTS, STATICS within a certain ZONE. The zones can take various forms and can be movable.
