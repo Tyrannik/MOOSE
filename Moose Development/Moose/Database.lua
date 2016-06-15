@@ -54,9 +54,6 @@ DATABASE = {
     ClientsByName = {},
     ClientsByID = {},
   },
-  DCSUnits = {},
-  DCSGroups = {},
-  DCSStatics = {},
   UNITS = {},
   STATICS = {},
   GROUPS = {},
@@ -75,11 +72,11 @@ local _DATABASECoalition =
 
 local _DATABASECategory =
   {
-    [Unit.Category.AIRPLANE] = "Plane",
-    [Unit.Category.HELICOPTER] = "Helicopter",
-    [Unit.Category.GROUND_UNIT] = "Vehicle",
-    [Unit.Category.SHIP] = "Ship",
-    [Unit.Category.STRUCTURE] = "Structure",
+    ["plane"] = Unit.Category.AIRPLANE,
+    ["helicopter"] = Unit.Category.HELICOPTER,
+    ["vehicle"] = Unit.Category.GROUND_UNIT,
+    ["ship"] = Unit.Category.SHIP,
+    ["static"] = Unit.Category.STRUCTURE,
   }
 
 
@@ -105,6 +102,7 @@ function DATABASE:New()
   
   self:_RegisterTemplates()
   self:_RegisterGroupsAndUnits()
+  self:_RegisterClients()
   self:_RegisterStatics()
   self:_RegisterPlayers()
   
@@ -124,10 +122,13 @@ end
 
 --- Adds a Unit based on the Unit Name in the DATABASE.
 -- @param #DATABASE self
-function DATABASE:AddUnit( DCSUnit, DCSUnitName )
+function DATABASE:AddUnit( DCSUnitName )
 
-  self.DCSUnits[DCSUnitName] = DCSUnit 
-  self.UNITS[DCSUnitName] = UNIT:Register( DCSUnitName )
+  if not  self.UNITS[DCSUnitName] then
+    self.UNITS[DCSUnitName] = UNIT:Register( DCSUnitName )
+  end
+  
+  return self.UNITS[DCSUnitName]
 end
 
 
@@ -135,15 +136,16 @@ end
 -- @param #DATABASE self
 function DATABASE:DeleteUnit( DCSUnitName )
 
-  self.DCSUnits[DCSUnitName] = nil 
+  --self.UNITS[DCSUnitName] = nil 
 end
 
 --- Adds a Static based on the Static Name in the DATABASE.
 -- @param #DATABASE self
-function DATABASE:AddStatic( DCSStatic, DCSStaticName )
+function DATABASE:AddStatic( DCSStaticName )
 
-  self.DCSStatics[DCSStaticName] = DCSStatic 
-  self.STATICS[DCSStaticName] = STATIC:Register( DCSStaticName )
+  if not self.STATICS[DCSStaticName] then
+    self.STATICS[DCSStaticName] = STATIC:Register( DCSStaticName )
+  end
 end
 
 
@@ -151,7 +153,7 @@ end
 -- @param #DATABASE self
 function DATABASE:DeleteStatic( DCSStaticName )
 
-  self.DCSStatics[DCSStaticName] = nil 
+  --self.STATICS[DCSStaticName] = nil 
 end
 
 --- Finds a STATIC based on the StaticName.
@@ -180,8 +182,11 @@ end
 -- @param #DATABASE self
 function DATABASE:AddClient( ClientName )
 
-  self.CLIENTS[ClientName] = CLIENT:Register( ClientName )
-  self:E( self.CLIENTS[ClientName]:GetClassNameAndID() )
+  if not self.CLIENTS[ClientName] then
+    self.CLIENTS[ClientName] = CLIENT:Register( ClientName )
+  end
+
+  return self.CLIENTS[ClientName]
 end
 
 
@@ -198,10 +203,13 @@ end
 
 --- Adds a GROUP based on the GroupName in the DATABASE.
 -- @param #DATABASE self
-function DATABASE:AddGroup( DCSGroup, GroupName )
+function DATABASE:AddGroup( GroupName )
 
-  self.DCSGroups[GroupName] = DCSGroup
-  self.GROUPS[GroupName] = GROUP:Register( GroupName )
+  if not self.GROUPS[GroupName] then
+    self.GROUPS[GroupName] = GROUP:Register( GroupName )
+  end  
+  
+  return self.GROUPS[GroupName] 
 end
 
 --- Adds a player based on the Player Name in the DATABASE.
@@ -250,7 +258,7 @@ function DATABASE:Spawn( SpawnTemplate )
   SpawnTemplate.SpawnCountryID = nil
   SpawnTemplate.SpawnCategoryID = nil
 
-  self:_RegisterTemplate( SpawnTemplate )
+  self:_RegisterTemplate( SpawnTemplate, SpawnCoalitionID, SpawnCategoryID, SpawnCountryID  )
 
   self:T3( SpawnTemplate )
   coalition.addGroup( SpawnCountryID, SpawnCategoryID, SpawnTemplate )
@@ -260,7 +268,7 @@ function DATABASE:Spawn( SpawnTemplate )
   SpawnTemplate.SpawnCountryID = SpawnCountryID
   SpawnTemplate.SpawnCategoryID = SpawnCategoryID
 
-  local SpawnGroup = GROUP:Register( SpawnTemplate.name )
+  local SpawnGroup = self:AddGroup( SpawnTemplate.name )
   return SpawnGroup
 end
 
@@ -282,14 +290,15 @@ function DATABASE:GetStatusGroup( GroupName )
   end
 end
 
-
 --- Private method that registers new Group Templates within the DATABASE Object.
 -- @param #DATABASE self
 -- @param #table GroupTemplate
 -- @return #DATABASE self
-function DATABASE:_RegisterTemplate( GroupTemplate )
+function DATABASE:_RegisterTemplate( GroupTemplate, CoalitionID, CategoryID, CountryID )
 
   local GroupTemplateName = env.getValueDictByKey(GroupTemplate.name)
+  
+  local TraceTable = {}
 
   if not self.Templates.Groups[GroupTemplateName] then
     self.Templates.Groups[GroupTemplateName] = {}
@@ -306,8 +315,22 @@ function DATABASE:_RegisterTemplate( GroupTemplate )
   self.Templates.Groups[GroupTemplateName].groupId = GroupTemplate.groupId
   self.Templates.Groups[GroupTemplateName].UnitCount = #GroupTemplate.units
   self.Templates.Groups[GroupTemplateName].Units = GroupTemplate.units
+  self.Templates.Groups[GroupTemplateName].CategoryID = CategoryID
+  self.Templates.Groups[GroupTemplateName].CoalitionID = CoalitionID
+  self.Templates.Groups[GroupTemplateName].CountryID = CountryID
 
-  self:T2( { "Group", self.Templates.Groups[GroupTemplateName].GroupName, self.Templates.Groups[GroupTemplateName].UnitCount } )
+  
+  TraceTable[#TraceTable+1] = "Group"
+  TraceTable[#TraceTable+1] = self.Templates.Groups[GroupTemplateName].GroupName
+
+  TraceTable[#TraceTable+1] = "Coalition"
+  TraceTable[#TraceTable+1] = self.Templates.Groups[GroupTemplateName].CoalitionID
+  TraceTable[#TraceTable+1] = "Category"
+  TraceTable[#TraceTable+1] = self.Templates.Groups[GroupTemplateName].CategoryID
+  TraceTable[#TraceTable+1] = "Country"
+  TraceTable[#TraceTable+1] = self.Templates.Groups[GroupTemplateName].CountryID
+
+  TraceTable[#TraceTable+1] = "Units"
 
   for unit_num, UnitTemplate in pairs( GroupTemplate.units ) do
 
@@ -318,15 +341,35 @@ function DATABASE:_RegisterTemplate( GroupTemplate )
     self.Templates.Units[UnitTemplateName].GroupName = GroupTemplateName
     self.Templates.Units[UnitTemplateName].GroupTemplate = GroupTemplate
     self.Templates.Units[UnitTemplateName].GroupId = GroupTemplate.groupId
-    self:E( {"skill",UnitTemplate.skill})
+    self.Templates.Units[UnitTemplateName].CategoryID = CategoryID
+    self.Templates.Units[UnitTemplateName].CoalitionID = CoalitionID
+    self.Templates.Units[UnitTemplateName].CountryID = CountryID
+
     if UnitTemplate.skill and (UnitTemplate.skill == "Client" or UnitTemplate.skill == "Player") then
       self.Templates.ClientsByName[UnitTemplateName] = UnitTemplate
+      self.Templates.ClientsByName[UnitTemplateName].CategoryID = CategoryID
+      self.Templates.ClientsByName[UnitTemplateName].CoalitionID = CoalitionID
+      self.Templates.ClientsByName[UnitTemplateName].CountryID = CountryID
       self.Templates.ClientsByID[UnitTemplate.unitId] = UnitTemplate
     end
-    self:E( { "Unit", self.Templates.Units[UnitTemplateName].UnitName } )
+    
+    TraceTable[#TraceTable+1] = self.Templates.Units[UnitTemplateName].UnitName 
   end
+
+  self:E( TraceTable )
 end
 
+function DATABASE:GetCoalitionFromClientTemplate( ClientName )
+  return self.Templates.ClientsByName[ClientName].CoalitionID
+end
+
+function DATABASE:GetCategoryFromClientTemplate( ClientName )
+  return self.Templates.ClientsByName[ClientName].CategoryID
+end
+
+function DATABASE:GetCountryFromClientTemplate( ClientName )
+  return self.Templates.ClientsByName[ClientName].CountryID
+end
 
 --- Private method that registers all alive players in the mission.
 -- @param #DATABASE self
@@ -364,14 +407,14 @@ function DATABASE:_RegisterGroupsAndUnits()
       if DCSGroup:isExist() then
         local DCSGroupName = DCSGroup:getName()
   
-        self:E( { "Register Group:", DCSGroup, DCSGroupName } )
-        self:AddGroup( DCSGroup, DCSGroupName )
+        self:E( { "Register Group:", DCSGroupName } )
+        self:AddGroup( DCSGroupName )
 
         for DCSUnitId, DCSUnit in pairs( DCSGroup:getUnits() ) do
   
           local DCSUnitName = DCSUnit:getName()
-          self:E( { "Register Unit:", DCSUnit, DCSUnitName } )
-          self:AddUnit( DCSUnit, DCSUnitName )
+          self:E( { "Register Unit:", DCSUnitName } )
+          self:AddUnit( DCSUnitName )
         end
       else
         self:E( { "Group does not exist: ",  DCSGroup } )
@@ -380,8 +423,16 @@ function DATABASE:_RegisterGroupsAndUnits()
     end
   end
 
+  return self
+end
+
+--- Private method that registers all Units of skill Client or Player within in the mission.
+-- @param #DATABASE self
+-- @return #DATABASE self
+function DATABASE:_RegisterClients()
+
   for ClientName, ClientTemplate in pairs( self.Templates.ClientsByName ) do
-    self:E( { "Adding Client:", ClientName } )
+    self:E( { "Register Client:", ClientName } )
     self:AddClient( ClientName )
   end
   
@@ -397,8 +448,8 @@ function DATABASE:_RegisterStatics()
       if DCSStatic:isExist() then
         local DCSStaticName = DCSStatic:getName()
   
-        self:E( { "Register Static:", DCSStatic, DCSStaticName } )
-        self:AddStatic( DCSStatic, DCSStaticName )
+        self:E( { "Register Static:", DCSStaticName } )
+        self:AddStatic( DCSStaticName )
       else
         self:E( { "Static does not exist: ",  DCSStatic } )
       end
@@ -418,8 +469,8 @@ function DATABASE:_EventOnBirth( Event )
   self:F2( { Event } )
 
   if Event.IniDCSUnit then
-    self:AddUnit( Event.IniDCSUnit, Event.IniDCSUnitName )
-    self:AddGroup( Event.IniDCSGroup, Event.IniDCSGroupName )
+    self:AddUnit( Event.IniDCSUnitName )
+    self:AddGroup( Event.IniDCSGroupName )
     self:_EventOnPlayerEnterUnit( Event )
   end
 end
@@ -432,7 +483,7 @@ function DATABASE:_EventOnDeadOrCrash( Event )
   self:F2( { Event } )
 
   if Event.IniDCSUnit then
-    if self.DCSUnits[Event.IniDCSUnitName] then
+    if self.UNITS[Event.IniDCSUnitName] then
       self:DeleteUnit( Event.IniDCSUnitName )
       -- add logic to correctly remove a group once all units are destroyed...
     end
@@ -510,19 +561,6 @@ function DATABASE:ForEach( IteratorFunction, arg, Set )
 
   local Scheduler = SCHEDULER:New( self, Schedule, {}, 0.001, 0.001, 0 )
   
-  return self
-end
-
-
---- Iterate the DATABASE and call an iterator function for each **alive** unit, providing the DCSUnit and optional parameters.
--- @param #DATABASE self
--- @param #function IteratorFunction The function that will be called when there is an alive unit in the database. The function needs to accept a DCSUnit parameter.
--- @return #DATABASE self
-function DATABASE:ForEachDCSUnit( IteratorFunction, ... )
-  self:F2( arg )
-  
-  self:ForEach( IteratorFunction, arg, self.DCSUnits )
-
   return self
 end
 
@@ -608,25 +646,25 @@ function DATABASE:_RegisterTemplates()
   self.Navpoints = {}
   self.UNITS = {}
   --Build routines.db.units and self.Navpoints
-  for coa_name, coa_data in pairs(env.mission.coalition) do
+  for CoalitionName, coa_data in pairs(env.mission.coalition) do
 
-    if (coa_name == 'red' or coa_name == 'blue') and type(coa_data) == 'table' then
+    if (CoalitionName == 'red' or CoalitionName == 'blue') and type(coa_data) == 'table' then
       --self.Units[coa_name] = {}
 
       ----------------------------------------------
       -- build nav points DB
-      self.Navpoints[coa_name] = {}
+      self.Navpoints[CoalitionName] = {}
       if coa_data.nav_points then --navpoints
         for nav_ind, nav_data in pairs(coa_data.nav_points) do
 
           if type(nav_data) == 'table' then
-            self.Navpoints[coa_name][nav_ind] = routines.utils.deepCopy(nav_data)
+            self.Navpoints[CoalitionName][nav_ind] = routines.utils.deepCopy(nav_data)
 
-            self.Navpoints[coa_name][nav_ind]['name'] = nav_data.callsignStr  -- name is a little bit more self-explanatory.
-            self.Navpoints[coa_name][nav_ind]['point'] = {}  -- point is used by SSE, support it.
-            self.Navpoints[coa_name][nav_ind]['point']['x'] = nav_data.x
-            self.Navpoints[coa_name][nav_ind]['point']['y'] = 0
-            self.Navpoints[coa_name][nav_ind]['point']['z'] = nav_data.y
+            self.Navpoints[CoalitionName][nav_ind]['name'] = nav_data.callsignStr  -- name is a little bit more self-explanatory.
+            self.Navpoints[CoalitionName][nav_ind]['point'] = {}  -- point is used by SSE, support it.
+            self.Navpoints[CoalitionName][nav_ind]['point']['x'] = nav_data.x
+            self.Navpoints[CoalitionName][nav_ind]['point']['y'] = 0
+            self.Navpoints[CoalitionName][nav_ind]['point']['z'] = nav_data.y
           end
       end
       end
@@ -634,7 +672,7 @@ function DATABASE:_RegisterTemplates()
       if coa_data.country then --there is a country table
         for cntry_id, cntry_data in pairs(coa_data.country) do
 
-          local countryName = string.lower(cntry_data.name)
+          local CountryName = string.upper(cntry_data.name)
           --self.Units[coa_name][countryName] = {}
           --self.Units[coa_name][countryName]["countryId"] = cntry_data.id
 
@@ -644,7 +682,7 @@ function DATABASE:_RegisterTemplates()
 
               if obj_type_name == "helicopter" or obj_type_name == "ship" or obj_type_name == "plane" or obj_type_name == "vehicle" or obj_type_name == "static" then --should be an unncessary check
 
-                local category = obj_type_name
+                local CategoryName = obj_type_name
 
                 if ((type(obj_type_data) == 'table') and obj_type_data.group and (type(obj_type_data.group) == 'table') and (#obj_type_data.group > 0)) then  --there's a group!
 
@@ -653,7 +691,12 @@ function DATABASE:_RegisterTemplates()
                   for group_num, GroupTemplate in pairs(obj_type_data.group) do
 
                     if GroupTemplate and GroupTemplate.units and type(GroupTemplate.units) == 'table' then  --making sure again- this is a valid group
-                      self:_RegisterTemplate( GroupTemplate )
+                      self:_RegisterTemplate( 
+                        GroupTemplate, 
+                        coalition.side[string.upper(CoalitionName)], 
+                        _DATABASECategory[string.lower(CategoryName)], 
+                        country.id[string.upper(CountryName)] 
+                      )
                     end --if GroupTemplate and GroupTemplate.units then
                   end --for group_num, GroupTemplate in pairs(obj_type_data.group) do
                 end --if ((type(obj_type_data) == 'table') and obj_type_data.group and (type(obj_type_data.group) == 'table') and (#obj_type_data.group > 0)) then

@@ -35,6 +35,8 @@ Include.File( "Movement" )
 Include.File( "Sead" )
 Include.File( "Escort" )
 Include.File( "MissileTrainer" )
+Include.File( "AIBalancer" )
+Include.File( "AirbasePolice" )
 
 
 

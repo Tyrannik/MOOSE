@@ -17,7 +17,9 @@
 				<a href="index.html">index</a>
 			</li></ul>
 		<ul>
+					<li><a href="AIBalancer.html">AIBalancer</a></li>
 					<li><a href="Airbase.html">Airbase</a></li>
+					<li><a href="AirbasePolice.html">AirbasePolice</a></li>
 					<li><a href="Base.html">Base</a></li>
 					<li><a href="CARGO.html">CARGO</a></li>
 					<li><a href="CleanUp.html">CleanUp</a></li>
@@ -174,6 +176,20 @@ Note that this is really fantastic, as you now have the dynamic of taking contro
     <li><a href="##(ESCORT).MenuAssistedAttack">ESCORT.MenuAssistedAttack</a>: Creates a menu structure so that the escort can resume from a waypoint.</li>
 </ul>
 
+
+
+			<h2>Usage:</h2>
+		<pre class="example"><code>-- Declare a new EscortPlanes object as follows:
+
+-- First find the GROUP object and the CLIENT object.
+local EscortClient = CLIENT:FindByName( "Unit Name" ) -- The Unit Name is the name of the unit flagged with the skill Client in the mission editor.
+local EscortGroup = GROUP:FindByName( "Group Name" ) -- The Group Name is the name of the group that will escort the Escort Client.
+
+-- Now use these 2 objects to construct the new EscortPlanes object.
+EscortPlanes = ESCORT:New( EscortClient, EscortGroup, "Desert", "Welcome to the mission. You are escorted by a plane with code name 'Desert', which can be instructed through the F10 radio menu." )
+
+
+</code></pre>
 
 	<h2>Global(s)</h2>
 	<table class="function_list">
@@ -433,9 +449,15 @@ Note that this is really fantastic, as you now have the dynamic of taking contro
 </td>
 		</tr>
 		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(ESCORT).FollowDistance">ESCORT.FollowDistance</a></td>
+		<td class="summary">
+<p>The current follow distance.</p>
+</td>
+		</tr>
+		<tr>
 		<td class="name" nowrap="nowrap"><a href="##(ESCORT).FollowScheduler">ESCORT.FollowScheduler</a></td>
 		<td class="summary">
-<p>The id of the _FollowScheduler function.</p>
+<p>The instance of the SCHEDULER class.</p>
 </td>
 		</tr>
 		<tr>
@@ -559,6 +581,12 @@ Note that this is really fantastic, as you now have the dynamic of taking contro
 </td>
 		</tr>
 		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(ESCORT).SmokeDirectionVector">ESCORT.SmokeDirectionVector</a></td>
+		<td class="summary">
+
+</td>
+		</tr>
+		<tr>
 		<td class="name" nowrap="nowrap"><a href="##(ESCORT).Targets">ESCORT.Targets</a></td>
 		<td class="summary">
 
@@ -568,6 +596,12 @@ Note that this is really fantastic, as you now have the dynamic of taking contro
 		<td class="name" nowrap="nowrap"><a href="##(ESCORT).TaskPoints">ESCORT.TaskPoints</a></td>
 		<td class="summary">
 
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(ESCORT).TestSmokeDirectionVector">ESCORT:TestSmokeDirectionVector(SmokeDirection)</a></td>
+		<td class="summary">
+<p>This function is for test, it will put on the frequency of the FollowScheduler a red smoke at the direction vector calculated for the escort to fly to.</p>
 </td>
 		</tr>
 		<tr>
@@ -589,7 +623,7 @@ Note that this is really fantastic, as you now have the dynamic of taking contro
 </td>
 		</tr>
 		<tr>
-		<td class="name" nowrap="nowrap"><a href="##(ESCORT)._FollowScheduler">ESCORT:_FollowScheduler(FollowDistance)</a></td>
+		<td class="name" nowrap="nowrap"><a href="##(ESCORT)._FollowScheduler">ESCORT:_FollowScheduler()</a></td>
 		<td class="summary">
 
 </td>
@@ -730,7 +764,7 @@ Note that this is really fantastic, as you now have the dynamic of taking contro
 		<ul>
 				<li>
 				
-<p><code><em> EscortGroup </em></code>: </p>
+<p><code><em><a href="Group.html##(GROUP)">Group#GROUP</a> EscortGroup </em></code>: </p>
 
 				</li>
 		</ul>
@@ -741,7 +775,10 @@ Note that this is really fantastic, as you now have the dynamic of taking contro
 			<h2><a id="#(Distance)" >Type <code>Distance</code></a></h2>
 			
 			<h2><a id="#(ESCORT)" >Type <code>ESCORT</code></a></h2>
-				<h3>Field(s)</h3>
+				
+<p>ESCORT class</p>
+
+	<h3>Field(s)</h3>
 		<dl class="function">
 <dt>
 
@@ -1322,13 +1359,27 @@ Note that this is really fantastic, as you now have the dynamic of taking contro
 <dt>
 
 		<em>#number</em>
+<a id="#(ESCORT).FollowDistance" >
+<strong>ESCORT.FollowDistance</strong>
+</a>
+</dt>
+<dd>
+	
+<p>The current follow distance.</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+		<em><a href="Scheduler.html##(SCHEDULER)">Scheduler#SCHEDULER</a></em>
 <a id="#(ESCORT).FollowScheduler" >
 <strong>ESCORT.FollowScheduler</strong>
 </a>
 </dt>
 <dd>
 	
-<p>The id of the _FollowScheduler function.</p>
+<p>The instance of the SCHEDULER class.</p>
 
 </dd>
 </dl>
@@ -1788,6 +1839,16 @@ Name of the escort.</p>
 <p><em><a href="##(ESCORT)">#ESCORT</a>:</em>
 self</p>
 
+			<h3>Usage:</h3>
+		<pre class="example"><code>-- Declare a new EscortPlanes object as follows:
+
+-- First find the GROUP object and the CLIENT object.
+local EscortClient = CLIENT:FindByName( "Unit Name" ) -- The Unit Name is the name of the unit flagged with the skill Client in the mission editor.
+local EscortGroup = GROUP:FindByName( "Group Name" ) -- The Group Name is the name of the group that will escort the Escort Client.
+
+-- Now use these 2 objects to construct the new EscortPlanes object.
+EscortPlanes = ESCORT:New( EscortClient, EscortGroup, "Desert", "Welcome to the mission. You are escorted by a plane with code name 'Desert', which can be instructed through the F10 radio menu." )</code></pre>
+
 </dd>
 </dl>
 		<dl class="function">
@@ -1870,6 +1931,19 @@ self</p>
 		<dl class="function">
 <dt>
 
+<a id="#(ESCORT).SmokeDirectionVector" >
+<strong>ESCORT.SmokeDirectionVector</strong>
+</a>
+</dt>
+<dd>
+	
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
 		<em></em>
 <a id="#(ESCORT).Targets" >
 <strong>ESCORT.Targets</strong>
@@ -1893,6 +1967,31 @@ self</p>
 	
 
 
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(ESCORT).TestSmokeDirectionVector" >
+<strong>ESCORT:TestSmokeDirectionVector(SmokeDirection)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>This function is for test, it will put on the frequency of the FollowScheduler a red smoke at the direction vector calculated for the escort to fly to.</p>
+
+	
+<p>This allows to visualize where the escort is flying to.</p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em>#boolean SmokeDirection </em></code>: 
+If true, then the direction vector will be smoked.</p>
+
+				</li>
+		</ul>
 </dd>
 </dl>
 		<dl class="function">
@@ -1962,21 +2061,13 @@ self</p>
 <dt>
 
 <a id="#(ESCORT)._FollowScheduler" >
-<strong>ESCORT:_FollowScheduler(FollowDistance)</strong>
+<strong>ESCORT:_FollowScheduler()</strong>
 </a>
 </dt>
 <dd>
 	
 
 
-		<h3>Parameter</h3>
-		<ul>
-				<li>
-				
-<p><code><em> FollowDistance </em></code>: </p>
-
-				</li>
-		</ul>
 </dd>
 </dl>
 		<dl class="function">
