@@ -70,6 +70,8 @@ The following classes are currently embedded within MOOSE and can be included wi
 
 * [MISSILETRAINER](Moose Training/Documentation/MissileTrainer.html): Missile trainer, it destroys missiles when they are within a certain range of player airplanes, displays tracking and alert messages of missile launches; approach; destruction, and configure with radio menu commands. Various APIs available to configure the trainer.
 
+* [AIBALANCER](Moose Training/Documentation/AIBalancer.html): Compensate in a multi player mission the abscence of players with dynamically spawned AI air units. When players join CLIENTS, the AI will either be destroyed, or will fly back to the home or nearest friendly airbase.
+
 
 # MOOSE Tutorials and Examples
 
@@ -86,13 +88,23 @@ Note that the framework is based on code i've written myself, but some of it is 
 
 You'll notice that within this framework, there are functions used from mist. I've taken the liberty to copy those atomic mist functions that are very nice and useful, and used those. 
 
-2. Prof_hilactic & others:
+**Grimes**
+Without the effort of Grimes with MIST and his continuous documentation, the development of MOOSE would not have been possible. MOOSE is not replacing MIST, but is compensating it.
+
+**Prof_hilactic**
 SEAD Defenses. I've taken the script, and reworded it to fit within MOOSE. The script within MOOSE is hardly recognizable anymore from the original. Find here the posts: http://forums.eagle.ru/showpost.php?...59&postcount=1
 
-3. xcom
-His contribution is related to the eStatHandler. I've analyzed and studied his scripts, and reworked it a bit to use it also within the framework (I've also tweaked it a bit). Find his post here: http://forums.eagle.ru/showpost.php?...73&postcount=1
+**xcom**
+His contribution is related to the Event logging system. I've analyzed and studied his scripts, and reworked it a bit to use it also within the framework (I've also tweaked it a bit). Find his post here: http://forums.eagle.ru/showpost.php?...73&postcount=1
 
-4. The rest of the framework functions and class definitions were my own developments. Trust i've spent hours and hours investigating, trying and writing and documenting code building this framework.
+**Dutch_Baron (James)**
+Working together with James has resulted in the creation of the AIBALANCER class. James has shared his ideas on balancing AI with air units, and together we made a first design which you can use now :-)
+
+**Stuka (Danny)**
+Working together with Danny has resulted in the MISSILETRAINER class. Stuka has shared his ideas and together we made a design. Together with the 476 virtual team, we tested this CLASS, and got much positive feedback!
+
+The rest of the framework functions and class definitions were my own developments, especially the core of MOOSE.
+Trust I've spent hours and hours investigating, trying and writing and documenting code building this framework.
 
 Note that there is a vast amount of other scripts out there. I may contact you personally to ask for your contribution / permission if i can use your idea or script to tweak it to the framework. Parts of these scripts will have to be redesigned to fit it into an OO framework.
 
