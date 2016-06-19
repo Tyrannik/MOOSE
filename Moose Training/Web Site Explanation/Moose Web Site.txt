@@ -70,6 +70,8 @@ The following classes are currently embedded within MOOSE and can be included wi
 
 * [MISSILETRAINER](Moose Training/Documentation/MissileTrainer.html): Missile trainer, it destroys missiles when they are within a certain range of player airplanes, displays tracking and alert messages of missile launches; approach; destruction, and configure with radio menu commands. Various APIs available to configure the trainer.
 
+* [PATROLZONE](Moose Training/Documentation/PatrolZone.html): Make an alive AI Group patrol a zone derived from the ZONE_BASE class. Manage out-of-fuel events and set altitude and speed ranges for the patrol.
+
 * [AIBALANCER](Moose Training/Documentation/AIBalancer.html): Compensate in a multi player mission the abscence of players with dynamically spawned AI air units. When players join CLIENTS, the AI will either be destroyed, or will fly back to the home or nearest friendly airbase.
 
 
