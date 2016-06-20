@@ -21,11 +21,11 @@
 -- -- Declare a new FollowPlanes object as follows:
 -- 
 -- -- First find the GROUP object and the CLIENT object.
--- local FollowClient = CLIENT:FindByName( "Unit Name" ) -- The Unit Name is the name of the unit flagged with the skill Client in the mission editor.
+-- local FollowUnit = CLIENT:FindByName( "Unit Name" ) -- The Unit Name is the name of the unit flagged with the skill Client in the mission editor.
 -- local FollowGroup = GROUP:FindByName( "Group Name" ) -- The Group Name is the name of the group that will escort the Follow Client.
 -- 
 -- -- Now use these 2 objects to construct the new FollowPlanes object.
--- FollowPlanes = FOLLOW:New( FollowClient, FollowGroup, "Desert", "Welcome to the mission. You are escorted by a plane with code name 'Desert', which can be instructed through the F10 radio menu." )
+-- FollowPlanes = FOLLOW:New( FollowUnit, FollowGroup, "Desert", "Welcome to the mission. You are escorted by a plane with code name 'Desert', which can be instructed through the F10 radio menu." )
 -- 
 -- ===
 --
@@ -35,7 +35,7 @@
 --- FOLLOW class
 -- @type FOLLOW
 -- @extends Base#BASE
--- @field Client#CLIENT FollowClient
+-- @field Unit#UNIT FollowUnit
 -- @field Set#SET_GROUP FollowGroupSet
 -- @field #string FollowName
 -- @field #FOLLOW.MODE FollowMode The mode the escort is in.
@@ -48,7 +48,7 @@
 FOLLOW = {
   ClassName = "FOLLOW",
   FollowName = nil, -- The Follow Name
-  FollowClient = nil,
+  FollowUnit = nil,
   FollowGroupSet = nil,
   FollowMode = 1,
   MODE = {
@@ -74,38 +74,36 @@ FOLLOW = {
 
 --- FOLLOW class constructor for an AI group
 -- @param #FOLLOW self
--- @param Client#CLIENT FollowClient The client escorted by the FollowGroup.
--- @param Set#SET_GROUP FollowGroupSet The group AI escorting the FollowClient.
+-- @param Unit#UNIT FollowUnit The UNIT leading the FolllowGroupSet.
+-- @param Set#SET_GROUP FollowGroupSet The group AI escorting the FollowUnit.
 -- @param #string FollowName Name of the escort.
 -- @return #FOLLOW self
-function FOLLOW:New( FollowClient, FollowGroupSet, FollowName, FollowBriefing )
+function FOLLOW:New( FollowUnit, FollowGroupSet, FollowName, FollowBriefing )
   local self = BASE:Inherit( self, BASE:New() )
-  self:F( { FollowClient, FollowGroupSet, FollowName } )
+  self:F( { FollowUnit, FollowGroupSet, FollowName } )
 
-  self.FollowClient = FollowClient -- Client#CLIENT
+  self.FollowUnit = FollowUnit -- Unit#UNIT
   self.FollowGroupSet = FollowGroupSet -- Set#SET_GROUP
   
   self.FollowGroupSet:ForEachGroup(
     --- @param Group#GROUP FollowGroup
-    function( FollowGroup )
+    function( FollowGroup, FollowName, FollowUnit )
       local Vec3 = { x = math.random( -20, -400 ), y = math.random( -100, 100 ), z = math.random( -200, 200 ) }
       FollowGroup:SetState( self, "Vec3", Vec3 )
-    end
+      FollowGroup:OptionROTPassiveDefense()
+      FollowGroup:OptionROEReturnFire()
+      FollowGroup:MessageToClient( FollowGroup:GetCategoryName() .. " '" .. FollowName .. "' (" .. FollowGroup:GetCallsign() .. ") reporting! " ..
+        "We're following your flight. ",
+        60, FollowUnit
+      )
+    end,
+    FollowName, self.FollowUnit
   )
 
   
   self.FollowName = FollowName
   self.FollowBriefing = FollowBriefing
 
-  self.FollowGroup:WayPointInitialize(1)
-
-  self.FollowGroup:OptionROTVertical()
-  self.FollowGroup:OptionROEOpenFire()
-
-  FollowGroupSet:MessageToClient( FollowGroupSet:GetCategoryName() .. " '" .. FollowName .. "' (" .. FollowGroupSet:GetCallsign() .. ") reporting! " ..
-    "We're following your flight. ",
-    60, FollowClient
-  )
 
   self.CT1 = 0
   self.GT1 = 0
@@ -128,14 +126,14 @@ end
 function FOLLOW:_FollowScheduler()
   self:F( )
 
-  self:T( { self.FollowClient.UnitName } )
-  if self.FollowClient:IsAlive() then
+  self:T( { self.FollowUnit.UnitName }, self.FollowUnit:IsAlive() )
+  if self.FollowUnit:IsAlive() then
 
-    local ClientUnit = self.FollowClient:GetClientGroupUnit()
+    local ClientUnit = self.FollowUnit
     
     self.FollowGroupSet:ForEachGroup(
       --- @param Group#GROUP FollowGroup
-      function( FollowGroup )
+      function( FollowGroup, ClientUnit )
         local GroupUnit = self.FollowGroup:GetUnit( 1 )
         local FollowFormation = FollowGroup:GetState( self, "Vec3" )
         local FollowDistance = -FollowFormation.x
@@ -233,7 +231,8 @@ function FOLLOW:_FollowScheduler()
           -- Now route the escort to the desired point with the desired speed.
           self.FollowGroup:TaskRouteToVec3( GDV_Formation, Speed / 3.6 ) -- DCS models speed in Mps (Miles per second)
         end
-      end
+      end,
+      ClientUnit
     )
 
     return true
