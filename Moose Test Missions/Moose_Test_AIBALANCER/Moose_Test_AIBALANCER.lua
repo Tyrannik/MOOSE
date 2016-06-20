@@ -15,10 +15,11 @@ RU_AIBalancer:ReturnToNearestAirbases( 10000, RU_AirbasesSet )
 
 local PatrolZoneGroup = GROUP:FindByName( "Patrol Zone Blue" )
 local PatrolZoneBlue = ZONE_POLYGON:New( "PatrolZone", PatrolZoneGroup )
-local PatrolZoneB = PATROLZONE:New( PatrolZoneBlue, 3000, 6000, 900, 1100 ):ManageFuel( 0.2, 180 )
+local PatrolZoneB = PATROLZONE:New( PatrolZoneBlue, 3000, 6000, 900, 1100 ):ManageFuel( 0.3, 180 )
 US_AIBalancer:SetPatrolZone( PatrolZoneB )
 
 local PatrolZoneGroup = GROUP:FindByName( "Patrol Zone Red" )
 local PatrolZoneRed = ZONE_POLYGON:New( "PatrolZone", PatrolZoneGroup )
-local PatrolZoneR = PATROLZONE:New( PatrolZoneRed, 3000, 6000, 900, 1100 ):ManageFuel( 0.2, 180 )
-RU_AIBalancer:SetPatrolZone( PatrolZoneR )
+local PatrolZoneR = PATROLZONE:New( PatrolZoneRed, 3000, 6000, 900, 1100 ):ManageFuel( 0.3, 180 )
+RU_AIBalancer:SetPatrolZone( PatrolZoneR ) 
+
