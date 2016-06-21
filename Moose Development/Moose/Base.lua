@@ -343,7 +343,7 @@ function BASE:SetState( Object, StateName, State )
     self.States[ClassNameAndID] = {}
   end
   self.States[ClassNameAndID][StateName] = State
-  self:F2( { ClassNameAndID, StateName, State } )
+  self:F3( { ClassNameAndID, StateName, State } )
   
   return self.States[ClassNameAndID][StateName]
 end
@@ -354,7 +354,7 @@ function BASE:GetState( Object, StateName )
 
   if self.States[ClassNameAndID] then
     local State = self.States[ClassNameAndID][StateName]
-    self:F2( { ClassNameAndID, StateName, State } )
+    self:F3( { ClassNameAndID, StateName, State } )
     return State
   end
   

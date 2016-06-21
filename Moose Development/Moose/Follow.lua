@@ -88,14 +88,14 @@ function FOLLOW:New( FollowUnit, FollowGroupSet, FollowName, FollowBriefing )
   self.FollowGroupSet:ForEachGroup(
     --- @param Group#GROUP FollowGroup
     function( FollowGroup, FollowName, FollowUnit )
-      local Vec3 = { x = math.random( -20, -400 ), y = math.random( -100, 100 ), z = math.random( -200, 200 ) }
+      local Vec3 = { x = math.random( -20, -150 ), y = math.random( -50, 50 ), z = math.random( -800, 800 ) }
       FollowGroup:SetState( self, "Vec3", Vec3 )
       FollowGroup:OptionROTPassiveDefense()
       FollowGroup:OptionROEReturnFire()
-      FollowGroup:MessageToClient( FollowGroup:GetCategoryName() .. " '" .. FollowName .. "' (" .. FollowGroup:GetCallsign() .. ") reporting! " ..
-        "We're following your flight. ",
-        60, FollowUnit
-      )
+      --FollowGroup:MessageToClient( FollowGroup:GetCategoryName() .. " '" .. FollowName .. "' (" .. FollowGroup:GetCallsign() .. ") reporting! " ..
+      --  "We're following your flight. ",
+      --  60, FollowUnit
+      --)
     end,
     FollowName, self.FollowUnit
   )
@@ -126,34 +126,48 @@ end
 function FOLLOW:_FollowScheduler()
   self:F( )
 
-  self:T( { self.FollowUnit.UnitName }, self.FollowUnit:IsAlive() )
+  self:T( { self.FollowUnit.UnitName, self.FollowUnit:IsAlive() } )
   if self.FollowUnit:IsAlive() then
 
     local ClientUnit = self.FollowUnit
-    
+
+    self:T( {ClientUnit.UnitName } )
+
+    local CT1, CT2, CV1, CV2
+    CT1 = ClientUnit:GetState( self, "CT1" )
+
+    if CT1 == 0 then
+      ClientUnit:SetState( self, "CV1", ClientUnit:GetPointVec3() )
+      ClientUnit:SetState( self, "CT1", timer.getTime() )
+    else
+      CT1 = ClientUnit:GetState( self, "CT1" )
+      CT2 = timer.getTime()
+      CV1 = ClientUnit:GetState( self, "CV1" )
+      CV2 = ClientUnit:GetPointVec3()
+      
+      ClientUnit:SetState( self, "CT1", CT2 )
+      ClientUnit:SetState( self, "CV1", CV2 )
+    end
+        
     self.FollowGroupSet:ForEachGroup(
       --- @param Group#GROUP FollowGroup
-      function( FollowGroup, ClientUnit )
-        local GroupUnit = self.FollowGroup:GetUnit( 1 )
-        local FollowFormation = FollowGroup:GetState( self, "Vec3" )
-        local FollowDistance = -FollowFormation.x
+      -- @param Unit#UNIT ClientUnit
+      function( FollowGroup, ClientUnit, CT1, CV1, CT2, CV2 )
         
+        local GroupUnit = FollowGroup:GetUnit( 1 )
+        local FollowFormation = FollowGroup:GetState( self, "Vec3" )
+        self:T( FollowFormation )
+        local FollowDistance = FollowFormation.x
+        
+        FollowGroup:E( "in loop" )
         self:T( {ClientUnit.UnitName, GroupUnit.UnitName } )
+
+        local GT1 = GroupUnit:GetState( self, "GT1" )
     
-        if self.CT1 == 0 and self.GT1 == 0 then
-          self.CV1 = ClientUnit:GetPointVec3()
-          self:T( { "self.CV1", self.CV1 } )
-          self.CT1 = timer.getTime()
-          self.GV1 = GroupUnit:GetPointVec3()
-          self.GT1 = timer.getTime()
+        if GT1 == 0 then
+          GroupUnit:SetState( self, "GV1", GroupUnit:GetPointVec3() )
+          GroupUnit:SetState( self, "GT1", timer.getTime() ) 
         else
-          local CT1 = self.CT1
-          local CT2 = timer.getTime()
-          local CV1 = self.CV1
-          local CV2 = ClientUnit:GetPointVec3()
-          self.CT1 = CT2
-          self.CV1 = CV2
-    
           local CD = ( ( CV2.x - CV1.x )^2 + ( CV2.y - CV1.y )^2 + ( CV2.z - CV1.z )^2 ) ^ 0.5
           local CT = CT2 - CT1
     
@@ -161,12 +175,12 @@ function FOLLOW:_FollowScheduler()
     
           self:T2( { "Client:", CS, CD, CT, CV2, CV1, CT2, CT1 } )
     
-          local GT1 = self.GT1
+          local GT1 = GroupUnit:GetState( self, "GT1" )
           local GT2 = timer.getTime()
-          local GV1 = self.GV1
+          local GV1 = GroupUnit:GetState( self, "GV1" )
           local GV2 = GroupUnit:GetPointVec3()
-          self.GT1 = GT2
-          self.GV1 = GV2
+          GroupUnit:SetState( self, "GT1", GT2 )
+          GroupUnit:SetState( self, "GV1", GV2 )
     
           local GD = ( ( GV2.x - GV1.x )^2 + ( GV2.y - GV1.y )^2 + ( GV2.z - GV1.z )^2 ) ^ 0.5
           local GT = GT2 - GT1
@@ -187,7 +201,7 @@ function FOLLOW:_FollowScheduler()
           -- Now we calculate the intersecting vector between the circle around CV2 with radius FollowDistance and GH2.
           -- From the GeoGebra model: CVI = (x(CV2) + FollowDistance cos(alpha), y(GH2) + FollowDistance sin(alpha), z(CV2))
           local CVI = { x = CV2.x + FollowDistance * math.cos(alpha),
-            y = GH2.y,
+            y = GH2.y + FollowFormation.y,
             z = CV2.z + FollowDistance * math.sin(alpha),
           }
     
@@ -202,15 +216,19 @@ function FOLLOW:_FollowScheduler()
           -- Now we can calculate the group destination vector GDV.
           local GDV = { x = DVu.x * CS * 8 + CVI.x, y = CVI.y, z = DVu.z * CS * 8 + CVI.z }
           
-          local GDV_Formation = { x = GDV.x + FollowFormation.x, y = GDV.y + FollowFormation.y, z = GDV.z + FollowFormation.z }
+          local GDV_Formation = { 
+            x = GDV.x + ( FollowFormation.x * math.cos(alpha) - FollowFormation.z * math.sin(alpha) ), 
+            y = GDV.y, 
+            z = GDV.z + ( FollowFormation.z * math.cos(alpha) + FollowFormation.x * math.sin(alpha) )
+          }
           
           if self.SmokeDirectionVector == true then
             trigger.action.smoke( GDV, trigger.smokeColor.Red )
             trigger.action.smoke( GDV_Formation, trigger.smokeColor.Red )
           end
           
-          self:T2( { "CV2:", CV2 } )
-          self:T2( { "CVI:", CVI } )
+          self:T3( { "CV2:", CV2 } )
+          self:T3( { "CVI:", CVI } )
           self:T2( { "GDV:", GDV } )
     
           -- Measure distance between client and group
@@ -218,26 +236,27 @@ function FOLLOW:_FollowScheduler()
     
           -- The calculation of the Speed would simulate that the group would take 30 seconds to overcome
           -- the requested Distance).
-          local Time = 10
-          local CatchUpSpeed = ( CatchUpDistance - ( CS * 8.4 ) ) / Time
+          local Time = 20
+          local CatchUpSpeed = ( CatchUpDistance - ( CS * 9.5 ) ) / Time
     
           local Speed = CS + CatchUpSpeed
           if Speed < 0 then
             Speed = 0
           end
+          
+          self:T({CatchUpDistance, CatchUpSpeed})
     
-          self:T( { "Client Speed, Follow Speed, Speed, FollowDistance, Time:", CS, GS, Speed, FollowDistance, Time } )
+          self:T3( { "Client Speed, Follow Speed, Speed, FollowDistance, Time:", CS, GS, Speed, FollowDistance, Time } )
     
           -- Now route the escort to the desired point with the desired speed.
-          self.FollowGroup:TaskRouteToVec3( GDV_Formation, Speed / 3.6 ) -- DCS models speed in Mps (Miles per second)
+          FollowGroup:TaskRouteToVec3( GDV_Formation, Speed / 3.6 ) -- DCS models speed in Mps (Miles per second)
         end
       end,
-      ClientUnit
+      ClientUnit, CT1, CV1, CT2, CV2
     )
 
     return true
   end
-
   return false
 end
 

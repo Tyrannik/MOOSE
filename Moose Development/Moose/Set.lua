@@ -297,9 +297,10 @@ end
 -- @param #SET_BASE self
 -- @return #SET_BASE self
 function SET_BASE:_FilterStart()
+  self:F2( self.Database )
 
   for ObjectName, Object in pairs( self.Database ) do
-
+    self:E(Object)
     if self:IsIncludeObject( Object ) then
       self:E( { "Adding Object:", ObjectName } )
       self:Add( ObjectName, Object )
@@ -530,8 +531,9 @@ end
 -- @param #table Object
 -- @return #SET_BASE self
 function SET_BASE:IsIncludeObject( Object )
-  self:F3( Object )
+  self:E( Object )
   
+  self:E( "IsIncludeObject not correctly called!" )
   return true
 end
 
@@ -904,8 +906,8 @@ function SET_GROUP:IsIncludeObject( MooseGroup )
   if self.Filter.GroupPrefixes then
     local MooseGroupPrefix = false
     for GroupPrefixId, GroupPrefix in pairs( self.Filter.GroupPrefixes ) do
-      self:T3( { "Prefix:", string.find( MooseGroup:GetName(), GroupPrefix, 1 ), GroupPrefix } )
-      if string.find( MooseGroup:GetName(), GroupPrefix, 1 ) then
+      local FindResult = string.find( MooseGroup:GetName(), GroupPrefix, 1 )
+      if FindResult ~= nil then
         MooseGroupPrefix = true
       end
     end

@@ -232,6 +232,7 @@ function UNIT:IsAlive()
   
   if DCSUnit then
     local UnitIsAlive = DCSUnit:isExist()
+    self:T2( UnitIsAlive )
     return UnitIsAlive
   end	
 	

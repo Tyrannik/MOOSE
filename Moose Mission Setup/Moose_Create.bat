@@ -72,6 +72,7 @@ COPY /b Moose.lua + %1\CleanUp.lua               							Moose.lua
 COPY /b Moose.lua + %1\Spawn.lua                 							Moose.lua
 COPY /b Moose.lua + %1\Movement.lua              							Moose.lua
 COPY /b Moose.lua + %1\Sead.lua                  							Moose.lua
+COPY /b Moose.lua + %1\Follow.lua                							Moose.lua
 COPY /b Moose.lua + %1\Escort.lua                							Moose.lua
 COPY /b Moose.lua + %1\MissileTrainer.lua        							Moose.lua
 COPY /b Moose.lua + %1\PatrolZone.lua            							Moose.lua
