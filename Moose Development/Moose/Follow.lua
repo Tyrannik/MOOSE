@@ -136,7 +136,7 @@ function FOLLOW:_FollowScheduler()
     local CT1, CT2, CV1, CV2
     CT1 = ClientUnit:GetState( self, "CT1" )
 
-    if CT1 == 0 then
+    if CT1 == nil or CT1 == 0 then
       ClientUnit:SetState( self, "CV1", ClientUnit:GetPointVec3() )
       ClientUnit:SetState( self, "CT1", timer.getTime() )
     else
@@ -159,12 +159,11 @@ function FOLLOW:_FollowScheduler()
         self:T( FollowFormation )
         local FollowDistance = FollowFormation.x
         
-        FollowGroup:E( "in loop" )
         self:T( {ClientUnit.UnitName, GroupUnit.UnitName } )
 
         local GT1 = GroupUnit:GetState( self, "GT1" )
     
-        if GT1 == 0 then
+        if CT1 == nil or CT1 == 0 or GT1 == nil or GT1 == 0 then
           GroupUnit:SetState( self, "GV1", GroupUnit:GetPointVec3() )
           GroupUnit:SetState( self, "GT1", timer.getTime() ) 
         else
@@ -223,8 +222,8 @@ function FOLLOW:_FollowScheduler()
           }
           
           if self.SmokeDirectionVector == true then
-            trigger.action.smoke( GDV, trigger.smokeColor.Red )
-            trigger.action.smoke( GDV_Formation, trigger.smokeColor.Red )
+            trigger.action.smoke( GDV, trigger.smokeColor.Green )
+            trigger.action.smoke( GDV_Formation, trigger.smokeColor.White )
           end
           
           self:T3( { "CV2:", CV2 } )
