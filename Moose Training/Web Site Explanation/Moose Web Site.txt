@@ -52,7 +52,9 @@ The following classes are currently embedded within MOOSE and can be included wi
 
 * [CLIENT](Moose Training/Documentation/Client.html): This class wraps a DCS Unit object within the simulator, which has a skill Client or Player. The CLIENT class derives from the UNIT class, thus contains the complete UNIT API set, and additionally, the CLIENT class provides an API set to manage players joining or leaving clients, sending messages to players, and manage the state of units joined by players. For each DCS Unit object created within a running mission that can be joined by a player, a CLIENT object will be created automatically, that is stored within the DATABASE, under the _DATABASE object.
 
-* [STATIC](Moose Training/Documentation/Static.html): This class wraps a DCS StaticObject object within the simulator. The STATIC class derives from the UNIT class, thus contains the complete UNIT API set.
+* [STATIC](Moose Training/Documentation/Static.html): This class wraps a DCS StaticObject object within the simulator. The STATIC class derives from the POSITIONABLE class, thus contains also the position API set.
+
+* [AIRBASE](Moose Training/Documentation/Airbase.html): This class wraps a DCS Airbase object within the simulator. The AIRBASE class derives from the POSITIONALBE class, thus contains also the position API set.
 
 * [SETS](Moose Training/Documentation/Set.html): Builds dynamically a SET of objects. The SET can be filtered with defined filter criteria. Iterators are available that iterate through the GROUPSET, calling a function for each object within the SET.
 
@@ -74,6 +76,11 @@ The following classes are currently embedded within MOOSE and can be included wi
 
 * [AIBALANCER](Moose Training/Documentation/AIBalancer.html): Compensate in a multi player mission the abscence of players with dynamically spawned AI air units. When players join CLIENTS, the AI will either be destroyed, or will fly back to the home or nearest friendly airbase.
 
+* [DETECTION](Moose Training/Documentation/Detection.html): Detect other units using the available sensors of the detection unit. The DETECTION_BASE derived classes will provide different methods how the sets of detected objects are built.
+
+* [FAC](Moose Training/Documentation/Fac.html): Using the DETECTION_BASE derived classes, detected objects can be reported in different ways to a set of clients (SET_CLIENT). FAC_BASE derived classes will provide target detection reporting and control using the radio menu. 
+
+* [FOLLOW](Moose Training/Documentation/Follow.html): Build large air formations using the FOLLOW class.
 
 # MOOSE Tutorials and Examples
 
@@ -105,9 +112,17 @@ Working together with James has resulted in the creation of the AIBALANCER class
 **Stuka (Danny)**
 Working together with Danny has resulted in the MISSILETRAINER class. Stuka has shared his ideas and together we made a design. Together with the 476 virtual team, we tested this CLASS, and got much positive feedback!
 
+**Mechanic (Gábor)**
+Worked together with Gábor to create the concept of the DETECTION and FAC classes. Mechanic shared his ideas and concepts to group detected targets into sets within detection zones... Will continue to work with Gábor to workout the DETECTION and FAC classes.
+
+**Shadoh**
+Interacted on the eagle dynamics forum to build the FOLLOW class to build large WWII airplane formations.
+
+For the rest I also would like to thank the numerous feedback and help and assistance of the moose community at SLACK.COM.
+Note that there is a vast amount of other scripts out there. 
+I may contact you personally to ask for your contribution / permission if i can use your idea or script to tweak it to the framework. 
+Parts of these scripts will have to be redesigned to fit it into an OO framework.
+
 The rest of the framework functions and class definitions were my own developments, especially the core of MOOSE.
 Trust I've spent hours and hours investigating, trying and writing and documenting code building this framework.
-
-Note that there is a vast amount of other scripts out there. I may contact you personally to ask for your contribution / permission if i can use your idea or script to tweak it to the framework. Parts of these scripts will have to be redesigned to fit it into an OO framework.
-
 Hope you think the idea is great and useful.
