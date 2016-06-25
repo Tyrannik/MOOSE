@@ -260,6 +260,15 @@ function SET_BASE:_Find( ObjectName )
 end
 
 
+--- Gets the Set.
+-- @param #SET_BASE self
+-- @return #SET_BASE self
+function SET_BASE:GetSet()
+	self:F2()
+	
+  return self.Set
+end
+
 --- Adds a @{Base#BASE} object in the @{Set#SET_BASE}, using the Object Name as the index.
 -- @param #SET_BASE self
 -- @param #string ObjectName
@@ -390,7 +399,7 @@ end
 -- @param #SET_BASE self
 -- @param Event#EVENTDATA Event
 function SET_BASE:_EventOnDeadOrCrash( Event )
-  self:F3( { Event } )
+  self:F2( { Event } )
 
   if Event.IniDCSUnit then
     local ObjectName, Object = self:FindInDatabase( Event )
@@ -957,17 +966,35 @@ function SET_UNIT:New()
   -- Inherits from BASE
   local self = BASE:Inherit( self, SET_BASE:New( _DATABASE.UNITS ) )
 
+  _EVENTDISPATCHER:OnBirth( self._EventOnBirth, self )
+  _EVENTDISPATCHER:OnDead( self._EventOnDeadOrCrash, self )
+  _EVENTDISPATCHER:OnCrash( self._EventOnDeadOrCrash, self )
+
   return self
 end
 
 --- Add UNIT(s) to SET_UNIT.
--- @param Set#SET_UNIT self
+-- @param #SET_UNIT self
+-- @param #string AddUnit A single UNIT.
+-- @return #SET_UNIT self
+function SET_UNIT:AddUnit( AddUnit )
+  self:F2( AddUnit:GetName() )
+
+  self:Add( AddUnit:GetName(), AddUnit )
+    
+  return self
+end
+
+
+--- Add UNIT(s) to SET_UNIT.
+-- @param #SET_UNIT self
 -- @param #string AddUnitNames A single name or an array of UNIT names.
--- @return self
+-- @return #SET_UNIT self
 function SET_UNIT:AddUnitsByName( AddUnitNames )
 
   local AddUnitNamesArray = ( type( AddUnitNames ) == "table" ) and AddUnitNames or { AddUnitNames }
   
+  self:T( AddUnitNamesArray )
   for AddUnitID, AddUnitName in pairs( AddUnitNamesArray ) do
     self:Add( AddUnitName, UNIT:FindByName( AddUnitName ) )
   end
@@ -1138,6 +1165,7 @@ end
 function SET_UNIT:FindInDatabase( Event )
   self:F3( { Event } )
 
+  self:E( { Event.IniDCSUnitName, self.Database[Event.IniDCSUnitName] } )
   return Event.IniDCSUnitName, self.Database[Event.IniDCSUnitName]
 end
 
