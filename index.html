@@ -86,7 +86,8 @@ Refer to the tool at <a href="https://github.com/FlightControl-Master/MOOSE/tree
 <li><p><a href="Moose%20Training/Documentation/Group.html">GROUP</a>: This class wraps a DCS Group object within the simulator. It provides a more extensive API set, as well takes an abstraction of the complexity to give tasks, commands and set various options to DCS Groups. Additionally, the GROUP class provides a much richer API to identify various properties of the DCS Group. For each DCS Group created object within a running mission, a GROUP object will be created automatically, that is managed within the DATABASE, under the _DATABASE object.</p></li>
 <li><p><a href="Moose%20Training/Documentation/Unit.html">UNIT</a>: This class wraps a DCS Unit object within the simulator. It provides a more extensive API set, as well takes an abstraction of the complexity to give commands and set various options to DCS Units. Additionally, the UNIT class provides a much richer API to identify various properties of the DCS Unit. For each DCS Unit object created within a running mission, a UNIT object will be created automatically, that is stored within the DATABASE, under the _DATABASE object.</p></li>
 <li><p><a href="Moose%20Training/Documentation/Client.html">CLIENT</a>: This class wraps a DCS Unit object within the simulator, which has a skill Client or Player. The CLIENT class derives from the UNIT class, thus contains the complete UNIT API set, and additionally, the CLIENT class provides an API set to manage players joining or leaving clients, sending messages to players, and manage the state of units joined by players. For each DCS Unit object created within a running mission that can be joined by a player, a CLIENT object will be created automatically, that is stored within the DATABASE, under the _DATABASE object.</p></li>
-<li><p><a href="Moose%20Training/Documentation/Static.html">STATIC</a>: This class wraps a DCS StaticObject object within the simulator. The STATIC class derives from the UNIT class, thus contains the complete UNIT API set.</p></li>
+<li><p><a href="Moose%20Training/Documentation/Static.html">STATIC</a>: This class wraps a DCS StaticObject object within the simulator. The STATIC class derives from the POSITIONABLE class, thus contains also the position API set.</p></li>
+<li><p><a href="Moose%20Training/Documentation/Airbase.html">AIRBASE</a>: This class wraps a DCS Airbase object within the simulator. The AIRBASE class derives from the POSITIONALBE class, thus contains also the position API set.</p></li>
 <li><p><a href="Moose%20Training/Documentation/Set.html">SETS</a>: Builds dynamically a SET of objects. The SET can be filtered with defined filter criteria. Iterators are available that iterate through the GROUPSET, calling a function for each object within the SET.</p></li>
 <li><p><a href="Moose%20Training/Documentation/Message.html">MESSAGE</a>: A message system, displaying messages to Clients, Coalitions or All players. </p></li>
 <li><p><a href="Moose%20Training/Documentation/Point.html">POINTS</a>: A set of point classes that provide the functionality to define points within the simulator, either 2D or 3D. These points have enriched functionality, like smoking, flaring and other functions.</p></li>
@@ -97,6 +98,9 @@ Refer to the tool at <a href="https://github.com/FlightControl-Master/MOOSE/tree
 <li><p><a href="Moose%20Training/Documentation/MissileTrainer.html">MISSILETRAINER</a>: Missile trainer, it destroys missiles when they are within a certain range of player airplanes, displays tracking and alert messages of missile launches; approach; destruction, and configure with radio menu commands. Various APIs available to configure the trainer.</p></li>
 <li><p><a href="Moose%20Training/Documentation/PatrolZone.html">PATROLZONE</a>: Make an alive AI Group patrol a zone derived from the ZONE_BASE class. Manage out-of-fuel events and set altitude and speed ranges for the patrol.</p></li>
 <li><p><a href="Moose%20Training/Documentation/AIBalancer.html">AIBALANCER</a>: Compensate in a multi player mission the abscence of players with dynamically spawned AI air units. When players join CLIENTS, the AI will either be destroyed, or will fly back to the home or nearest friendly airbase.</p></li>
+<li><p><a href="Moose%20Training/Documentation/Detection.html">DETECTION</a>: Detect other units using the available sensors of the detection unit. The DETECTION_BASE derived classes will provide different methods how the sets of detected objects are built.</p></li>
+<li><p><a href="Moose%20Training/Documentation/Fac.html">FAC</a>: Using the DETECTION_BASE derived classes, detected objects can be reported in different ways to a set of clients (SET_CLIENT). FAC_BASE derived classes will provide target detection reporting and control using the radio menu. </p></li>
+<li><p><a href="Moose%20Training/Documentation/Follow.html">FOLLOW</a>: Build large air formations using the FOLLOW class.</p></li>
 </ul>
 
 <h1>
@@ -130,12 +134,20 @@ Working together with James has resulted in the creation of the AIBALANCER class
 <p><strong>Stuka (Danny)</strong>
 Working together with Danny has resulted in the MISSILETRAINER class. Stuka has shared his ideas and together we made a design. Together with the 476 virtual team, we tested this CLASS, and got much positive feedback!</p>
 
+<p><strong>Mechanic (Gábor)</strong>
+Worked together with Gábor to create the concept of the DETECTION and FAC classes. Mechanic shared his ideas and concepts to group detected targets into sets within detection zones... Will continue to work with Gábor to workout the DETECTION and FAC classes.</p>
+
+<p><strong>Shadoh</strong>
+Interacted on the eagle dynamics forum to build the FOLLOW class to build large WWII airplane formations.</p>
+
+<p>For the rest I also would like to thank the numerous feedback and help and assistance of the moose community at SLACK.COM.
+Note that there is a vast amount of other scripts out there. 
+I may contact you personally to ask for your contribution / permission if i can use your idea or script to tweak it to the framework. 
+Parts of these scripts will have to be redesigned to fit it into an OO framework.</p>
+
 <p>The rest of the framework functions and class definitions were my own developments, especially the core of MOOSE.
-Trust I've spent hours and hours investigating, trying and writing and documenting code building this framework.</p>
-
-<p>Note that there is a vast amount of other scripts out there. I may contact you personally to ask for your contribution / permission if i can use your idea or script to tweak it to the framework. Parts of these scripts will have to be redesigned to fit it into an OO framework.</p>
-
-<p>Hope you think the idea is great and useful.</p>
+Trust I've spent hours and hours investigating, trying and writing and documenting code building this framework.
+Hope you think the idea is great and useful.</p>
         </section>
 
         <aside id="sidebar">
