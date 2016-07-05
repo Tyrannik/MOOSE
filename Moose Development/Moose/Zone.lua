@@ -18,8 +18,9 @@
 --   * @{Zone#ZONE_BASE}: The ZONE_BASE class defining the base for all other zone classes.
 --   * @{Zone#ZONE_RADIUS}: The ZONE_RADIUS class defined by a zone name, a location and a radius.
 --   * @{Zone#ZONE}: The ZONE class, defined by the zone name as defined within the Mission Editor.
---   * @{Zone#ZONE_UNIT}: The ZONE_UNIT class defined by a zone around a @{Unit#UNIT} with a radius.
---   * @{Zone#ZONE_POLYGON}: The ZONE_POLYGON class defined by a sequence of @{Group#GROUP} waypoints within the Mission Editor, forming a polygon.
+--   * @{Zone#ZONE_UNIT}: The ZONE_UNIT class defines by a zone around a @{Unit#UNIT} with a radius.
+--   * @{Zone#ZONE_GROUP}: The ZONE_GROUP class defines by a zone around a @{Group#GROUP} with a radius.
+--   * @{Zone#ZONE_POLYGON}: The ZONE_POLYGON class defines by a sequence of @{Group#GROUP} waypoints within the Mission Editor, forming a polygon.
 -- 
 -- Each zone implements two polymorphic functions defined in @{Zone#ZONE_BASE}:
 -- 
@@ -52,7 +53,13 @@
 -- 
 -- ===
 -- 
--- 5) @{Zone#ZONE_POLYGON} class, extends @{Zone#ZONE_BASE}
+-- 5) @{Zone#ZONE_GROUP} class, extends @{Zone#ZONE_RADIUS}
+-- =======================================================
+-- The ZONE_GROUP class defines by a zone around a @{Group#GROUP} with a radius. The current leader of the group defines the center of the zone.
+-- 
+-- ===
+-- 
+-- 6) @{Zone#ZONE_POLYGON} class, extends @{Zone#ZONE_BASE}
 -- ========================================================
 -- The ZONE_POLYGON class defined by a sequence of @{Group#GROUP} waypoints within the Mission Editor, forming a polygon.
 -- 
@@ -60,13 +67,6 @@
 -- 
 -- @module Zone
 -- @author FlightControl
-
-
-
-
-
-
-
 
 
 --- The ZONE_BASE class
@@ -405,6 +405,81 @@ function ZONE_UNIT:GetPointVec2()
   return ZonePointVec2
 end
 
+--- Returns a random location within the zone.
+-- @param #ZONE_UNIT self
+-- @return DCSTypes#Vec2 The random location within the zone.
+function ZONE_UNIT:GetRandomVec2()
+  self:F( self.ZoneName )
+
+  local Point = {}
+  local PointVec2 = self.ZoneUNIT:GetPointVec2()
+
+  local angle = math.random() * math.pi*2;
+  Point.x = PointVec2.x + math.cos( angle ) * math.random() * self:GetRadius();
+  Point.y = PointVec2.y + math.sin( angle ) * math.random() * self:GetRadius();
+  
+  self:T( { Point } )
+  
+  return Point
+end
+
+--- The ZONE_GROUP class defined by a zone around a @{Group}, taking the average center point of all the units within the Group, with a radius.
+-- @type ZONE_GROUP
+-- @field Group#GROUP ZoneGROUP
+-- @extends Zone#ZONE_RADIUS
+ZONE_GROUP = {
+  ClassName="ZONE_GROUP",
+  }
+  
+--- Constructor to create a ZONE_GROUP instance, taking the zone name, a zone @{Group#GROUP} and a radius.
+-- @param #ZONE_GROUP self
+-- @param #string ZoneName Name of the zone.
+-- @param Group#GROUP ZoneGROUP The @{Group} as the center of the zone.
+-- @param DCSTypes#Distance Radius The radius of the zone.
+-- @return #ZONE_GROUP self
+function ZONE_GROUP:New( ZoneName, ZoneGROUP, Radius )
+  local self = BASE:Inherit( self, ZONE_RADIUS:New( ZoneName, ZoneGROUP:GetPointVec2(), Radius ) )
+  self:F( { ZoneName, ZoneGROUP:GetPointVec2(), Radius } )
+
+  self.ZoneGROUP = ZoneGROUP
+  
+  return self
+end
+
+
+--- Returns the current location of the @{Group}.
+-- @param #ZONE_GROUP self
+-- @return DCSTypes#Vec2 The location of the zone based on the @{Group} location.
+function ZONE_GROUP:GetPointVec2()
+  self:F( self.ZoneName )
+  
+  local ZonePointVec2 = self.ZoneGROUP:GetPointVec2()
+
+  self:T( { ZonePointVec2 } )
+  
+  return ZonePointVec2
+end
+
+--- Returns a random location within the zone of the @{Group}.
+-- @param #ZONE_GROUP self
+-- @return DCSTypes#Vec2 The random location of the zone based on the @{Group} location.
+function ZONE_GROUP:GetRandomVec2()
+  self:F( self.ZoneName )
+
+  local Point = {}
+  local PointVec2 = self.ZoneGROUP:GetPointVec2()
+
+  local angle = math.random() * math.pi*2;
+  Point.x = PointVec2.x + math.cos( angle ) * math.random() * self:GetRadius();
+  Point.y = PointVec2.y + math.sin( angle ) * math.random() * self:GetRadius();
+  
+  self:T( { Point } )
+  
+  return Point
+end
+
+
+
 -- Polygons
 
 --- The ZONE_POLYGON_BASE class defined by an array of @{DCSTypes#Vec2}, forming a polygon.
@@ -490,33 +565,34 @@ end
 
 
 --- Returns if a location is within the zone.
+-- Source learned and taken from: https://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
 -- @param #ZONE_POLYGON_BASE self
 -- @param DCSTypes#Vec2 PointVec2 The location to test.
 -- @return #boolean true if the location is within the zone.
 function ZONE_POLYGON_BASE:IsPointVec2InZone( PointVec2 )
   self:F2( PointVec2 )
 
-  local i 
-  local j 
-  local c = false
+  local Next 
+  local Prev 
+  local InPolygon = false
   
-  i = 1
-  j = #self.Polygon
+  Next = 1
+  Prev = #self.Polygon
   
-  while i < #self.Polygon do
-    j = i
-    i = i + 1
-    self:T( { i, j, self.Polygon[i], self.Polygon[j] } )
-    if ( ( ( self.Polygon[i].y > PointVec2.y ) ~= ( self.Polygon[j].y > PointVec2.y ) ) and
-         ( PointVec2.x < ( self.Polygon[j].x - self.Polygon[i].x ) * ( PointVec2.y - self.Polygon[i].y ) / ( self.Polygon[j].y - self.Polygon[i].y ) + self.Polygon[i].x ) 
+  while Next <= #self.Polygon do
+    self:T( { Next, Prev, self.Polygon[Next], self.Polygon[Prev] } )
+    if ( ( ( self.Polygon[Next].y > PointVec2.y ) ~= ( self.Polygon[Prev].y > PointVec2.y ) ) and
+         ( PointVec2.x < ( self.Polygon[Prev].x - self.Polygon[Next].x ) * ( PointVec2.y - self.Polygon[Next].y ) / ( self.Polygon[Prev].y - self.Polygon[Next].y ) + self.Polygon[Next].x ) 
        ) then
-       c = not c
+       InPolygon = not InPolygon
     end
-    self:T2( { "c = ", c } )
+    self:T2( { InPolygon = InPolygon } )
+    Prev = Next
+    Next = Next + 1
   end
 
-  self:T( { "c = ", c } )
-  return c
+  self:T( { InPolygon = InPolygon } )
+  return InPolygon
 end
 
 --- Define a random @{DCSTypes#Vec2} within the zone.

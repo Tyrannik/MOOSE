@@ -1,5 +1,5 @@
 env.info( '*** MOOSE STATIC INCLUDE START *** ' ) 
-env.info( 'Moose Generation Timestamp: 20160625_0851' ) 
+env.info( 'Moose Generation Timestamp: 20160705_0828' ) 
 local base = _G
 
 Include = {}
@@ -447,22 +447,6 @@ routines.getNorthCorrection = function(point)  --gets the correction needed for 
 	local lat, lon = coord.LOtoLL(point)
 	local north_posit = coord.LLtoLO(lat + 1, lon)
 	return math.atan2(north_posit.z - point.z, north_posit.x - point.x)
-end
-
-
--- the main area
-do
-	-- THE MAIN FUNCTION --   Accessed 100 times/sec.
-	routines.main = function()
-		timer.scheduleFunction(routines.main, {}, timer.getTime() + 2)  --reschedule first in case of Lua error
-		----------------------------------------------------------------------------------------------------------
-		--area to add new stuff in
-
-		routines.do_scheduled_functions()
-	end -- end of routines.main
-
-	timer.scheduleFunction(routines.main, {}, timer.getTime() + 2)
-
 end
 
 
@@ -2969,7 +2953,7 @@ end
 -- @param Arguments A #table or any field.
 function BASE:_F( Arguments, DebugInfoCurrentParam, DebugInfoFromParam )
 
-  if ( _TraceAll == true ) or ( _TraceClass[self.ClassName] or _TraceClassMethod[self.ClassName] ) then
+  if debug and ( _TraceAll == true ) or ( _TraceClass[self.ClassName] or _TraceClassMethod[self.ClassName] ) then
 
     local DebugInfoCurrent = DebugInfoCurrentParam and DebugInfoCurrentParam or debug.getinfo( 2, "nl" )
     local DebugInfoFrom = DebugInfoFromParam and DebugInfoFromParam or debug.getinfo( 3, "l" )
@@ -2998,7 +2982,7 @@ end
 -- @param Arguments A #table or any field.
 function BASE:F( Arguments )
 
-  if _TraceOnOff then
+  if debug and _TraceOnOff then
     local DebugInfoCurrent = debug.getinfo( 2, "nl" )
     local DebugInfoFrom = debug.getinfo( 3, "l" )
   
@@ -3014,7 +2998,7 @@ end
 -- @param Arguments A #table or any field.
 function BASE:F2( Arguments )
 
-  if _TraceOnOff then
+  if debug and _TraceOnOff then
     local DebugInfoCurrent = debug.getinfo( 2, "nl" )
     local DebugInfoFrom = debug.getinfo( 3, "l" )
   
@@ -3029,7 +3013,7 @@ end
 -- @param Arguments A #table or any field.
 function BASE:F3( Arguments )
 
-  if _TraceOnOff then
+  if debug and _TraceOnOff then
     local DebugInfoCurrent = debug.getinfo( 2, "nl" )
     local DebugInfoFrom = debug.getinfo( 3, "l" )
   
@@ -3044,7 +3028,7 @@ end
 -- @param Arguments A #table or any field.
 function BASE:_T( Arguments, DebugInfoCurrentParam, DebugInfoFromParam )
 
-	if ( _TraceAll == true ) or ( _TraceClass[self.ClassName] or _TraceClassMethod[self.ClassName] ) then
+	if debug and ( _TraceAll == true ) or ( _TraceClass[self.ClassName] or _TraceClassMethod[self.ClassName] ) then
 
     local DebugInfoCurrent = DebugInfoCurrentParam and DebugInfoCurrentParam or debug.getinfo( 2, "nl" )
     local DebugInfoFrom = DebugInfoFromParam and DebugInfoFromParam or debug.getinfo( 3, "l" )
@@ -3073,7 +3057,7 @@ end
 -- @param Arguments A #table or any field.
 function BASE:T( Arguments )
 
-  if _TraceOnOff then
+  if debug and _TraceOnOff then
     local DebugInfoCurrent = debug.getinfo( 2, "nl" )
     local DebugInfoFrom = debug.getinfo( 3, "l" )
   
@@ -3089,7 +3073,7 @@ end
 -- @param Arguments A #table or any field.
 function BASE:T2( Arguments )
 
-  if _TraceOnOff then
+  if debug and _TraceOnOff then
     local DebugInfoCurrent = debug.getinfo( 2, "nl" )
     local DebugInfoFrom = debug.getinfo( 3, "l" )
   
@@ -3104,7 +3088,7 @@ end
 -- @param Arguments A #table or any field.
 function BASE:T3( Arguments )
 
-  if _TraceOnOff then
+  if debug and _TraceOnOff then
     local DebugInfoCurrent = debug.getinfo( 2, "nl" )
     local DebugInfoFrom = debug.getinfo( 3, "l" )
   
@@ -3119,21 +3103,24 @@ end
 -- @param Arguments A #table or any field.
 function BASE:E( Arguments )
 
-	local DebugInfoCurrent = debug.getinfo( 2, "nl" )
-	local DebugInfoFrom = debug.getinfo( 3, "l" )
-	
-	local Function = "function"
-	if DebugInfoCurrent.name then
-		Function = DebugInfoCurrent.name
-	end
-
-	local LineCurrent = DebugInfoCurrent.currentline
-  local LineFrom = -1 
-	if DebugInfoFrom then
-	  LineFrom = DebugInfoFrom.currentline
-	end
-
-	env.info( string.format( "%6d(%6d)/%1s:%20s%05d.%s(%s)" , LineCurrent, LineFrom, "E", self.ClassName, self.ClassID, Function, routines.utils.oneLineSerialize( Arguments ) ) )
+  if debug then
+  	local DebugInfoCurrent = debug.getinfo( 2, "nl" )
+  	local DebugInfoFrom = debug.getinfo( 3, "l" )
+  	
+  	local Function = "function"
+  	if DebugInfoCurrent.name then
+  		Function = DebugInfoCurrent.name
+  	end
+  
+  	local LineCurrent = DebugInfoCurrent.currentline
+    local LineFrom = -1 
+  	if DebugInfoFrom then
+  	  LineFrom = DebugInfoFrom.currentline
+  	end
+  
+  	env.info( string.format( "%6d(%6d)/%1s:%20s%05d.%s(%s)" , LineCurrent, LineFrom, "E", self.ClassName, self.ClassID, Function, routines.utils.oneLineSerialize( Arguments ) ) )
+  end
+  
 end
 
 
@@ -3191,163 +3178,22 @@ function OBJECT:New( ObjectName )
 end
 
 
---- Returns if the Object is alive.
+--- Returns the unit's unique identifier.
 -- @param Object#OBJECT self
--- @return #boolean true if Object is alive.
+-- @return DCSObject#Object.ID ObjectID
 -- @return #nil The DCS Object is not existing or alive.  
-function OBJECT:IsAlive()
+function OBJECT:GetID()
   self:F2( self.ObjectName )
 
   local DCSObject = self:GetDCSObject()
   
   if DCSObject then
-    local ObjectIsAlive = DCSObject:isExist()
-    return ObjectIsAlive
+    local ObjectID = DCSObject:getID()
+    return ObjectID
   end 
-  
-  return false
-end
 
-
-
-
---- Returns DCS Object object name. 
--- The function provides access to non-activated objects too.
--- @param Object#OBJECT self
--- @return #string The name of the DCS Object.
--- @return #nil The DCS Object is not existing or alive.  
-function OBJECT:GetName()
-  self:F2( self.ObjectName )
-
-  local DCSObject = self:GetDCSObject()
-  
-  if DCSObject then
-    local ObjectName = self.ObjectName
-    return ObjectName
-  end 
-  
-  self:E( self.ClassName .. " " .. self.ObjectName .. " not found!" )
   return nil
 end
-
-
---- Returns the type name of the DCS Object.
--- @param Object#OBJECT self
--- @return #string The type name of the DCS Object.
--- @return #nil The DCS Object is not existing or alive.  
-function OBJECT:GetTypeName()
-  self:F2( self.ObjectName )
-  
-  local DCSObject = self:GetDCSObject()
-  
-  if DCSObject then
-    local ObjectTypeName = DCSObject:getTypeName()
-    self:T3( ObjectTypeName )
-    return ObjectTypeName
-  end
-
-  self:E( self.ClassName .. " " .. self.ObjectName .. " not found!" )
-  return nil
-end
-
---- Returns the Object's callsign - the localized string.
--- @param Object#OBJECT self
--- @return #string The Callsign of the Object.
--- @return #nil The DCS Object is not existing or alive.  
-function OBJECT:GetCallSign()
-  self:F2( self.ObjectName )
-
-  local DCSObject = self:GetDCSObject()
-  
-  if DCSObject then
-    local ObjectCallSign = DCSObject:getCallsign()
-    return ObjectCallSign
-  end
-  
-  self:E( self.ClassName .. " " .. self.ObjectName .. " not found!" )
-  return nil
-end
-
-
---- Returns the DCS Object category name as defined within the DCS Object Descriptor.
--- @param Object#OBJECT self
--- @return #string The DCS Object Category Name
-function OBJECT:GetCategoryName()
-  local DCSObject = self:GetDCSObject()
-  
-  if DCSObject then
-    local ObjectCategoryName = _CategoryName[ self:GetDesc().category ]
-    return ObjectCategoryName
-  end
-  
-  self:E( self.ClassName .. " " .. self.ObjectName .. " not found!" )
-  return nil
-end
-
---- Returns coalition of the Object.
--- @param Object#OBJECT self
--- @return DCSCoalitionObject#coalition.side The side of the coalition.
--- @return #nil The DCS Object is not existing or alive.  
-function OBJECT:GetCoalition()
-  self:F2( self.ObjectName )
-
-  local DCSObject = self:GetDCSObject()
-  
-  if DCSObject then
-    local ObjectCoalition = DCSObject:getCoalition()
-    self:T3( ObjectCoalition )
-    return ObjectCoalition
-  end 
-  
-  self:E( self.ClassName .. " " .. self.ObjectName .. " not found!" )
-  return nil
-end
-
---- Returns country of the Object.
--- @param Object#OBJECT self
--- @return DCScountry#country.id The country identifier.
--- @return #nil The DCS Object is not existing or alive.  
-function OBJECT:GetCountry()
-  self:F2( self.ObjectName )
-
-  local DCSObject = self:GetDCSObject()
-  
-  if DCSObject then
-    local ObjectCountry = DCSObject:getCountry()
-    self:T3( ObjectCountry )
-    return ObjectCountry
-  end 
-  
-  self:E( self.ClassName .. " " .. self.ObjectName .. " not found!" )
-  return nil
-end
- 
-
-
---- Returns Object descriptor. Descriptor type depends on Object category.
--- @param Object#OBJECT self
--- @return DCSObject#Object.Desc The Object descriptor.
--- @return #nil The DCS Object is not existing or alive.  
-function OBJECT:GetDesc()
-  self:F2( self.ObjectName )
-
-  local DCSObject = self:GetDCSObject()
-  
-  if DCSObject then
-    local ObjectDesc = DCSObject:getDesc()
-    self:T2( ObjectDesc )
-    return ObjectDesc
-  end
-  
-  self:E( self.ClassName .. " " .. self.ObjectName .. " not found!" )
-  return nil
-end
-
-
-
-
-
-
 
 
 
@@ -3406,7 +3252,7 @@ local _CategoryName = {
 -- @param DCSIdentifiable#Identifiable IdentifiableName The DCS Identifiable name
 -- @return #IDENTIFIABLE self
 function IDENTIFIABLE:New( IdentifiableName )
-  local self = BASE:Inherit( self, BASE:New() )
+  local self = BASE:Inherit( self, OBJECT:New( IdentifiableName ) )
   self:F2( IdentifiableName )
   self.IdentifiableName = IdentifiableName
   return self
@@ -3472,6 +3318,21 @@ function IDENTIFIABLE:GetTypeName()
 end
 
 
+--- Returns category of the DCS Identifiable.
+-- @param #IDENTIFIABLE self
+-- @return DCSObject#Object.Category The category ID
+function IDENTIFIABLE:GetCategory()
+  self:F2( self.ObjectName )
+
+  local DCSObject = self:GetDCSObject()
+  if DCSObject then
+    local ObjectCategory = DCSObject:getCategory()
+    self:T3( ObjectCategory )
+    return ObjectCategory
+  end
+
+  return nil
+end
 
 
 --- Returns the DCS Identifiable category name as defined within the DCS Identifiable Descriptor.
@@ -3973,7 +3834,6 @@ function CONTROLLABLE:PushTask( DCSTask, WaitTime )
     -- Controller:pushTask( DCSTask )
 
     if WaitTime then
-      --routines.scheduleFunction( Controller.pushTask, { Controller, DCSTask }, timer.getTime() + WaitTime )
       SCHEDULER:New( Controller, Controller.pushTask, { DCSTask }, WaitTime )
     else
       Controller:pushTask( DCSTask )
@@ -4004,7 +3864,6 @@ function CONTROLLABLE:SetTask( DCSTask, WaitTime )
     if not WaitTime then
       WaitTime = 1
     end
-    --routines.scheduleFunction( Controller.setTask, { Controller, DCSTask }, timer.getTime() + WaitTime )
     SCHEDULER:New( Controller, Controller.setTask, { DCSTask }, WaitTime )
 
     return self
@@ -5252,7 +5111,6 @@ function CONTROLLABLE:Route( GoPoints )
     local MissionTask = { id = 'Mission', params = { route = { points = Points, }, }, }
     local Controller = self:_GetController()
     --Controller.setTask( Controller, MissionTask )
-    --routines.scheduleFunction( Controller.setTask, { Controller, MissionTask}, timer.getTime() + 1 )
     SCHEDULER:New( Controller, Controller.setTask, { MissionTask }, 1 )
     return self
   end
@@ -6072,8 +5930,10 @@ function SCHEDULER:_Scheduler()
   local ErrorHandler = function( errmsg )
 
     env.info( "Error in SCHEDULER function:" .. errmsg )
-    env.info( debug.traceback() )
-
+    if debug ~= nil then
+      env.info( debug.traceback() )
+    end
+    
     return errmsg
   end
 
@@ -6592,7 +6452,8 @@ function EVENT:OnPlayerLeaveUnit( EventFunction, EventSelf )
 end
 
 
-
+--- @param #EVENT self
+-- @param #EVENTDATA Event
 function EVENT:onEvent( Event )
   self:F2( { _EVENTCODES[Event.id], Event } )
 
@@ -6626,7 +6487,7 @@ function EVENT:onEvent( Event )
       Event.WeaponName = Event.Weapon:getTypeName()
       --Event.WeaponTgtDCSUnit = Event.Weapon:getTarget()
     end
-    self:E( { _EVENTCODES[Event.id], Event } )
+    self:E( { _EVENTCODES[Event.id], Event.IniUnitName, Event.TgtUnitName, Event.WeaponName } )
     for ClassName, EventData in pairs( self.Events[Event.id] ) do
       if Event.IniDCSUnitName and EventData.IniUnit and EventData.IniUnit[Event.IniDCSUnitName] then 
         self:E( { "Calling event function for class ", ClassName, " unit ", Event.IniDCSUnitName } )
@@ -7719,14 +7580,34 @@ function GROUP:GetMaxHeight()
 
 end
 
---- @param Group#GROUP self
+-- SPAWNING
+
+--- Respawn the @{GROUP} using a (tweaked) template of the Group.
+-- The template must be retrieved with the @{Group#GROUP.GetTemplate}() function.
+-- The template contains all the definitions as declared within the mission file.
+-- To understand templates, do the following: 
+-- 
+--   * unpack your .miz file into a directory using 7-zip.
+--   * browse in the directory created to the file **mission**.
+--   * open the file and search for the country group definitions.
+--   
+-- Your group template will contain the fields as described within the mission file.
+-- 
+-- This function will:
+-- 
+--  * Get the current position and heading of the group.
+--  * When the group is alive, it will tweak the template x, y and heading coordinates of the group and the embedded units to the current units positions.
+--  * Then it will destroy the current alive group.
+--  * And it will respawn the group using your new template definition.
+-- @param Group#GROUP self
+-- @param #table Template The template of the Group retrieved with GROUP:GetTemplate()
 function GROUP:Respawn( Template )
 
   local Vec3 = self:GetPointVec3()
-  --Template.x = Vec3.x
-  --Template.y = Vec3.z
-  Template.x = nil
-  Template.y = nil
+  Template.x = Vec3.x
+  Template.y = Vec3.z
+  --Template.x = nil
+  --Template.y = nil
   
   self:E( #Template.units )
   for UnitID, UnitData in pairs( self:GetUnits() ) do
@@ -7743,15 +7624,48 @@ function GROUP:Respawn( Template )
     end
   end
   
+  self:Destroy()
   _DATABASE:Spawn( Template )
-
 end
 
+--- Returns the group template from the @{DATABASE} (_DATABASE object).
+-- @param #GROUP self
+-- @return #table 
 function GROUP:GetTemplate()
-
-  return _DATABASE.Templates.Groups[self:GetName()].Template
-
+  local GroupName = self:GetName()
+  self:E( GroupName )
+  return _DATABASE:GetGroupTemplate( GroupName )
 end
+
+--- Sets the controlled status in a Template.
+-- @param #GROUP self
+-- @param #boolean Controlled true is controlled, false is uncontrolled.
+-- @return #table 
+function GROUP:SetTemplateControlled( Template, Controlled )
+  Template.uncontrolled = not Controlled
+  return Template
+end
+
+--- Sets the CountryID of the group in a Template.
+-- @param #GROUP self
+-- @param DCScountry#country.id CountryID The country ID.
+-- @return #table 
+function GROUP:SetTemplateCountry( Template, CountryID )
+  Template.CountryID = CountryID
+  return Template
+end
+
+--- Sets the CoalitionID of the group in a Template.
+-- @param #GROUP self
+-- @param DCSCoalitionObject#coalition.side CoalitionID The coalition ID.
+-- @return #table 
+function GROUP:SetTemplateCoalition( Template, CoalitionID )
+  Template.CoalitionID = CoalitionID
+  return Template
+end
+
+
+
 
 --- Return the mission template of the group.
 -- @param #GROUP self
@@ -8479,8 +8393,9 @@ end
 --   * @{Zone#ZONE_BASE}: The ZONE_BASE class defining the base for all other zone classes.
 --   * @{Zone#ZONE_RADIUS}: The ZONE_RADIUS class defined by a zone name, a location and a radius.
 --   * @{Zone#ZONE}: The ZONE class, defined by the zone name as defined within the Mission Editor.
---   * @{Zone#ZONE_UNIT}: The ZONE_UNIT class defined by a zone around a @{Unit#UNIT} with a radius.
---   * @{Zone#ZONE_POLYGON}: The ZONE_POLYGON class defined by a sequence of @{Group#GROUP} waypoints within the Mission Editor, forming a polygon.
+--   * @{Zone#ZONE_UNIT}: The ZONE_UNIT class defines by a zone around a @{Unit#UNIT} with a radius.
+--   * @{Zone#ZONE_GROUP}: The ZONE_GROUP class defines by a zone around a @{Group#GROUP} with a radius.
+--   * @{Zone#ZONE_POLYGON}: The ZONE_POLYGON class defines by a sequence of @{Group#GROUP} waypoints within the Mission Editor, forming a polygon.
 -- 
 -- Each zone implements two polymorphic functions defined in @{Zone#ZONE_BASE}:
 -- 
@@ -8513,7 +8428,13 @@ end
 -- 
 -- ===
 -- 
--- 5) @{Zone#ZONE_POLYGON} class, extends @{Zone#ZONE_BASE}
+-- 5) @{Zone#ZONE_GROUP} class, extends @{Zone#ZONE_RADIUS}
+-- =======================================================
+-- The ZONE_GROUP class defines by a zone around a @{Group#GROUP} with a radius. The current leader of the group defines the center of the zone.
+-- 
+-- ===
+-- 
+-- 6) @{Zone#ZONE_POLYGON} class, extends @{Zone#ZONE_BASE}
 -- ========================================================
 -- The ZONE_POLYGON class defined by a sequence of @{Group#GROUP} waypoints within the Mission Editor, forming a polygon.
 -- 
@@ -8521,13 +8442,6 @@ end
 -- 
 -- @module Zone
 -- @author FlightControl
-
-
-
-
-
-
-
 
 
 --- The ZONE_BASE class
@@ -8866,6 +8780,81 @@ function ZONE_UNIT:GetPointVec2()
   return ZonePointVec2
 end
 
+--- Returns a random location within the zone.
+-- @param #ZONE_UNIT self
+-- @return DCSTypes#Vec2 The random location within the zone.
+function ZONE_UNIT:GetRandomVec2()
+  self:F( self.ZoneName )
+
+  local Point = {}
+  local PointVec2 = self.ZoneUNIT:GetPointVec2()
+
+  local angle = math.random() * math.pi*2;
+  Point.x = PointVec2.x + math.cos( angle ) * math.random() * self:GetRadius();
+  Point.y = PointVec2.y + math.sin( angle ) * math.random() * self:GetRadius();
+  
+  self:T( { Point } )
+  
+  return Point
+end
+
+--- The ZONE_GROUP class defined by a zone around a @{Group}, taking the average center point of all the units within the Group, with a radius.
+-- @type ZONE_GROUP
+-- @field Group#GROUP ZoneGROUP
+-- @extends Zone#ZONE_RADIUS
+ZONE_GROUP = {
+  ClassName="ZONE_GROUP",
+  }
+  
+--- Constructor to create a ZONE_GROUP instance, taking the zone name, a zone @{Group#GROUP} and a radius.
+-- @param #ZONE_GROUP self
+-- @param #string ZoneName Name of the zone.
+-- @param Group#GROUP ZoneGROUP The @{Group} as the center of the zone.
+-- @param DCSTypes#Distance Radius The radius of the zone.
+-- @return #ZONE_GROUP self
+function ZONE_GROUP:New( ZoneName, ZoneGROUP, Radius )
+  local self = BASE:Inherit( self, ZONE_RADIUS:New( ZoneName, ZoneGROUP:GetPointVec2(), Radius ) )
+  self:F( { ZoneName, ZoneGROUP:GetPointVec2(), Radius } )
+
+  self.ZoneGROUP = ZoneGROUP
+  
+  return self
+end
+
+
+--- Returns the current location of the @{Group}.
+-- @param #ZONE_GROUP self
+-- @return DCSTypes#Vec2 The location of the zone based on the @{Group} location.
+function ZONE_GROUP:GetPointVec2()
+  self:F( self.ZoneName )
+  
+  local ZonePointVec2 = self.ZoneGROUP:GetPointVec2()
+
+  self:T( { ZonePointVec2 } )
+  
+  return ZonePointVec2
+end
+
+--- Returns a random location within the zone of the @{Group}.
+-- @param #ZONE_GROUP self
+-- @return DCSTypes#Vec2 The random location of the zone based on the @{Group} location.
+function ZONE_GROUP:GetRandomVec2()
+  self:F( self.ZoneName )
+
+  local Point = {}
+  local PointVec2 = self.ZoneGROUP:GetPointVec2()
+
+  local angle = math.random() * math.pi*2;
+  Point.x = PointVec2.x + math.cos( angle ) * math.random() * self:GetRadius();
+  Point.y = PointVec2.y + math.sin( angle ) * math.random() * self:GetRadius();
+  
+  self:T( { Point } )
+  
+  return Point
+end
+
+
+
 -- Polygons
 
 --- The ZONE_POLYGON_BASE class defined by an array of @{DCSTypes#Vec2}, forming a polygon.
@@ -8951,33 +8940,34 @@ end
 
 
 --- Returns if a location is within the zone.
+-- Source learned and taken from: https://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
 -- @param #ZONE_POLYGON_BASE self
 -- @param DCSTypes#Vec2 PointVec2 The location to test.
 -- @return #boolean true if the location is within the zone.
 function ZONE_POLYGON_BASE:IsPointVec2InZone( PointVec2 )
   self:F2( PointVec2 )
 
-  local i 
-  local j 
-  local c = false
+  local Next 
+  local Prev 
+  local InPolygon = false
   
-  i = 1
-  j = #self.Polygon
+  Next = 1
+  Prev = #self.Polygon
   
-  while i < #self.Polygon do
-    j = i
-    i = i + 1
-    self:T( { i, j, self.Polygon[i], self.Polygon[j] } )
-    if ( ( ( self.Polygon[i].y > PointVec2.y ) ~= ( self.Polygon[j].y > PointVec2.y ) ) and
-         ( PointVec2.x < ( self.Polygon[j].x - self.Polygon[i].x ) * ( PointVec2.y - self.Polygon[i].y ) / ( self.Polygon[j].y - self.Polygon[i].y ) + self.Polygon[i].x ) 
+  while Next <= #self.Polygon do
+    self:T( { Next, Prev, self.Polygon[Next], self.Polygon[Prev] } )
+    if ( ( ( self.Polygon[Next].y > PointVec2.y ) ~= ( self.Polygon[Prev].y > PointVec2.y ) ) and
+         ( PointVec2.x < ( self.Polygon[Prev].x - self.Polygon[Next].x ) * ( PointVec2.y - self.Polygon[Next].y ) / ( self.Polygon[Prev].y - self.Polygon[Next].y ) + self.Polygon[Next].x ) 
        ) then
-       c = not c
+       InPolygon = not InPolygon
     end
-    self:T2( { "c = ", c } )
+    self:T2( { InPolygon = InPolygon } )
+    Prev = Next
+    Next = Next + 1
   end
 
-  self:T( { "c = ", c } )
-  return c
+  self:T( { InPolygon = InPolygon } )
+  return InPolygon
 end
 
 --- Define a random @{DCSTypes#Vec2} within the zone.
@@ -9709,7 +9699,7 @@ function AIRBASE:FindByName( AirbaseName )
   return AirbaseFound
 end
 
-function AIRBASE:GetDCSAirbase()
+function AIRBASE:GetDCSObject()
   local DCSAirbase = Airbase.getByName( self.AirbaseName )
   
   if DCSAirbase then
@@ -9719,203 +9709,6 @@ function AIRBASE:GetDCSAirbase()
   return nil
 end
 
---- Returns coalition of the Airbase.
--- @param Airbase#AIRBASE self
--- @return DCSCoalitionObject#coalition.side The side of the coalition.
--- @return #nil The DCS Airbase is not existing or alive.  
-function AIRBASE:GetCoalition()
-  self:F2( self.AirbaseName )
-
-  local DCSAirbase = self:GetDCSAirbase()
-  
-  if DCSAirbase then
-    local AirbaseCoalition = DCSAirbase:getCoalition()
-    self:T3( AirbaseCoalition )
-    return AirbaseCoalition
-  end 
-  
-  return nil
-end
-
---- Returns country of the Airbase.
--- @param Airbase#AIRBASE self
--- @return DCScountry#country.id The country identifier.
--- @return #nil The DCS Airbase is not existing or alive.  
-function AIRBASE:GetCountry()
-  self:F2( self.AirbaseName )
-
-  local DCSAirbase = self:GetDCSAirbase()
-  
-  if DCSAirbase then
-    local AirbaseCountry = DCSAirbase:getCountry()
-    self:T3( AirbaseCountry )
-    return AirbaseCountry
-  end 
-  
-  return nil
-end
- 
-
---- Returns DCS Airbase object name. 
--- The function provides access to non-activated units too.
--- @param Airbase#AIRBASE self
--- @return #string The name of the DCS Airbase.
--- @return #nil The DCS Airbase is not existing or alive.  
-function AIRBASE:GetName()
-  self:F2( self.AirbaseName )
-
-  local DCSAirbase = self:GetDCSAirbase()
-  
-  if DCSAirbase then
-    local AirbaseName = self.AirbaseName
-    return AirbaseName
-  end 
-  
-  return nil
-end
-
-
---- Returns if the airbase is alive.
--- @param Airbase#AIRBASE self
--- @return #boolean true if Airbase is alive.
--- @return #nil The DCS Airbase is not existing or alive.  
-function AIRBASE:IsAlive()
-  self:F2( self.AirbaseName )
-
-  local DCSAirbase = self:GetDCSAirbase()
-  
-  if DCSAirbase then
-    local AirbaseIsAlive = DCSAirbase:isExist()
-    return AirbaseIsAlive
-  end 
-  
-  return false
-end
-
---- Returns the unit's unique identifier.
--- @param Airbase#AIRBASE self
--- @return DCSAirbase#Airbase.ID Airbase ID
--- @return #nil The DCS Airbase is not existing or alive.  
-function AIRBASE:GetID()
-  self:F2( self.AirbaseName )
-
-  local DCSAirbase = self:GetDCSAirbase()
-  
-  if DCSAirbase then
-    local AirbaseID = DCSAirbase:getID()
-    return AirbaseID
-  end 
-
-  return nil
-end
-
---- Returns the Airbase's callsign - the localized string.
--- @param Airbase#AIRBASE self
--- @return #string The Callsign of the Airbase.
--- @return #nil The DCS Airbase is not existing or alive.  
-function AIRBASE:GetCallSign()
-  self:F2( self.AirbaseName )
-
-  local DCSAirbase = self:GetDCSAirbase()
-  
-  if DCSAirbase then
-    local AirbaseCallSign = DCSAirbase:getCallsign()
-    return AirbaseCallSign
-  end
-  
-  return nil
-end
-
-
-
---- Returns unit descriptor. Descriptor type depends on unit category.
--- @param Airbase#AIRBASE self
--- @return DCSAirbase#Airbase.Desc The Airbase descriptor.
--- @return #nil The DCS Airbase is not existing or alive.  
-function AIRBASE:GetDesc()
-  self:F2( self.AirbaseName )
-
-  local DCSAirbase = self:GetDCSAirbase()
-  
-  if DCSAirbase then
-    local AirbaseDesc = DCSAirbase:getDesc()
-    return AirbaseDesc
-  end
-  
-  return nil
-end
-
-
---- Returns the type name of the DCS Airbase.
--- @param Airbase#AIRBASE self
--- @return #string The type name of the DCS Airbase.
--- @return #nil The DCS Airbase is not existing or alive.  
-function AIRBASE:GetTypeName()
-  self:F2( self.AirbaseName )
-  
-  local DCSAirbase = self:GetDCSAirbase()
-  
-  if DCSAirbase then
-    local AirbaseTypeName = DCSAirbase:getTypeName()
-    self:T3( AirbaseTypeName )
-    return AirbaseTypeName
-  end
-
-  return nil
-end
-
-
---- Returns the @{DCSTypes#Vec2} vector indicating the point in 2D of the DCS Airbase within the mission.
--- @param Airbase#AIRBASE self
--- @return DCSTypes#Vec2 The 2D point vector of the DCS Airbase.
--- @return #nil The DCS Airbase is not existing or alive.  
-function AIRBASE:GetPointVec2()
-  self:F2( self.AirbaseName )
-
-  local DCSAirbase = self:GetDCSAirbase()
-  
-  if DCSAirbase then
-    local AirbasePointVec3 = DCSAirbase:getPosition().p
-    
-    local AirbasePointVec2 = {}
-    AirbasePointVec2.x = AirbasePointVec3.x
-    AirbasePointVec2.y = AirbasePointVec3.z
-  
-    self:T3( AirbasePointVec2 )
-    return AirbasePointVec2
-  end
-  
-  return nil
-end
-
---- Returns the DCS Airbase category as defined within the DCS Airbase Descriptor.
--- @param Airbase#AIRBASE self
--- @return DCSAirbase#Airbase.Category The DCS Airbase Category
-function AIRBASE:GetCategory()
-  local DCSAirbase = self:GetDCSAirbase()
-  
-  if DCSAirbase then
-    local AirbaseCategory = self:GetDesc().category
-    return AirbaseCategory
-  end
-  
-  return nil
-end
-
-
---- Returns the DCS Airbase category name as defined within the DCS Airbase Descriptor.
--- @param Airbase#AIRBASE self
--- @return #string The DCS Airbase Category Name
-function AIRBASE:GetCategoryName()
-  local DCSAirbase = self:GetDCSAirbase()
-  
-  if DCSAirbase then
-    local AirbaseCategoryName = self.CategoryName[ self:GetDesc().category ]
-    return AirbaseCategoryName
-  end
-  
-  return nil
-end
 
 
 --- This module contains the DATABASE class, managing the database of mission objects. 
@@ -10298,6 +10091,14 @@ function DATABASE:_RegisterTemplate( GroupTemplate, CoalitionID, CategoryID, Cou
   end
 
   self:E( TraceTable )
+end
+
+function DATABASE:GetGroupTemplate( GroupName )
+  local GroupTemplate = self.Templates.Groups[GroupName].Template
+  GroupTemplate.SpawnCoalitionID = self.Templates.Groups[GroupName].CoalitionID
+  GroupTemplate.SpawnCategoryID = self.Templates.Groups[GroupName].CategoryID
+  GroupTemplate.SpawnCountryID = self.Templates.Groups[GroupName].CountryID
+  return GroupTemplate
 end
 
 function DATABASE:GetCoalitionFromClientTemplate( ClientName )
@@ -11078,7 +10879,7 @@ end
 -- @param #SET_BASE self
 -- @param Event#EVENTDATA Event
 function SET_BASE:_EventOnDeadOrCrash( Event )
-  self:F2( { Event } )
+  self:F3( { Event } )
 
   if Event.IniDCSUnit then
     local ObjectName, Object = self:FindInDatabase( Event )
@@ -11134,7 +10935,7 @@ function SET_BASE:ForEach( IteratorFunction, arg, Set, Function, FunctionArgumen
   local function CoRoutine()
     local Count = 0
     for ObjectID, Object in pairs( Set ) do
-        self:T2( Object )
+        self:T3( Object )
         if Function then
           if Function( unpack( FunctionArguments ), Object ) == true then
             IteratorFunction( Object, unpack( arg ) )
@@ -11223,7 +11024,7 @@ function SET_BASE:IsIncludeObject( Object )
   return true
 end
 
---- Flushes the current SET_BASE contents in the log ... (for debug reasons).
+--- Flushes the current SET_BASE contents in the log ... (for debugging reasons).
 -- @param #SET_BASE self
 -- @return #string A string with the names of the objects.
 function SET_BASE:Flush()
@@ -11844,7 +11645,6 @@ end
 function SET_UNIT:FindInDatabase( Event )
   self:F3( { Event } )
 
-  self:E( { Event.IniDCSUnitName, self.Database[Event.IniDCSUnitName] } )
   return Event.IniDCSUnitName, self.Database[Event.IniDCSUnitName]
 end
 
@@ -14627,7 +14427,6 @@ function CARGO_PACKAGE:OnBoard( Client, LandingZone, OnBoardSide )
 	end
 	self:T( "Routing " .. CargoHostName )
 
-	--routines.scheduleFunction( routines.goRoute, { CargoHostName, Points}, timer.getTime() + 4 )
 	SCHEDULER:New( self, routines.goRoute, { CargoHostName, Points }, 4 )
      
 	return Valid
@@ -17863,7 +17662,6 @@ function CLEANUP:New( ZoneNames, TimeInterval )	local self = BASE:Inherit( self,
 	
 	_EVENTDISPATCHER:OnBirth( self._OnEventBirth, self )
 	
-	--self.CleanUpScheduler = routines.scheduleFunction( self._CleanUpScheduler, { self }, timer.getTime() + 1, TimeInterval )
   self.CleanUpScheduler = SCHEDULER:New( self, self._CleanUpScheduler, {}, 1, TimeInterval )
 	
 	return self
@@ -17988,7 +17786,6 @@ function CLEANUP:_EventShot( Event )
 	if  ( CurrentLandingZoneID ) then
 		-- Okay, the missile was fired within the CLEANUP.ZoneNames, destroy the fired weapon.
 		--_SEADmissile:destroy()
-		--routines.scheduleFunction( CLEANUP._DestroyMissile, { self, Event.Weapon }, timer.getTime() + 0.1)
     SCHEDULER:New( self, CLEANUP._DestroyMissile, { Event.Weapon }, 0.1 )
 	end
 end
@@ -18005,7 +17802,6 @@ function CLEANUP:_EventHitCleanUp( Event )
 			self:T( { "Life: ", Event.IniDCSUnitName, ' = ',  Event.IniDCSUnit:getLife(), "/", Event.IniDCSUnit:getLife0() } )
 			if Event.IniDCSUnit:getLife() < Event.IniDCSUnit:getLife0() then
 				self:T( "CleanUp: Destroy: " .. Event.IniDCSUnitName )
-				--routines.scheduleFunction( CLEANUP._DestroyUnit, { self, Event.IniDCSUnit }, timer.getTime() + 0.1)
         SCHEDULER:New( self, CLEANUP._DestroyUnit, { Event.IniDCSUnit }, 0.1 )
 			end
 		end
@@ -18016,7 +17812,6 @@ function CLEANUP:_EventHitCleanUp( Event )
 			self:T( { "Life: ", Event.TgtDCSUnitName, ' = ', Event.TgtDCSUnit:getLife(), "/", Event.TgtDCSUnit:getLife0() } )
 			if Event.TgtDCSUnit:getLife() < Event.TgtDCSUnit:getLife0() then
 				self:T( "CleanUp: Destroy: " .. Event.TgtDCSUnitName )
-				--routines.scheduleFunction( CLEANUP._DestroyUnit, { self, Event.TgtDCSUnit }, timer.getTime() + 0.1 )
         SCHEDULER:New( self, CLEANUP._DestroyUnit, { Event.TgtDCSUnit }, 0.1 )
 			end
 		end
@@ -18560,7 +18355,7 @@ function SPAWN:ReSpawn( SpawnIndex )
 -- TODO: This logic makes DCS crash and i don't know why (yet).
 	local SpawnGroup = self:GetGroupFromIndex( SpawnIndex )
 	if SpawnGroup then
-    local SpawnDCSGroup = SpawnGroup:GetDCSGroup()
+    local SpawnDCSGroup = SpawnGroup:GetDCSObject()
   	if SpawnDCSGroup then
       SpawnGroup:Destroy()
   	end
@@ -19578,7 +19373,6 @@ function SEAD:EventShot( Event )
 	local SEADUnitName = Event.IniDCSUnitName
 	local SEADWeapon = Event.Weapon -- Identify the weapon fired						
 	local SEADWeaponName = Event.WeaponName	-- return weapon type
-	--trigger.action.outText( string.format("Alerte, depart missile " ..string.format(SEADWeaponName)), 20) --debug message
 	-- Start of the 2nd loop
 	self:T( "Missile Launched = " .. SEADWeaponName )
 	if SEADWeaponName == "KH-58" or SEADWeaponName == "KH-25MPU" or SEADWeaponName == "AGM-88" or SEADWeaponName == "KH-31A" or SEADWeaponName == "KH-31P" then -- Check if the missile is a SEAD
@@ -19604,10 +19398,10 @@ function SEAD:EventShot( Event )
 				local Skills = { "Average", "Good", "High", "Excellent" }
 				_targetskill = Skills[ math.random(1,4) ]
 			end
-			self:T( _targetskill ) -- debug message for skill check
+			self:T( _targetskill )
 			if self.TargetSkill[_targetskill] then
 				if (_evade > self.TargetSkill[_targetskill].Evade) then
-					self:T( string.format("Evading, target skill  " ..string.format(_targetskill)) ) --debug message
+					self:T( string.format("Evading, target skill  " ..string.format(_targetskill)) )
 					local _targetMim = Weapon.getTarget(SEADWeapon)
 					local _targetMimname = Unit.getName(_targetMim)
 					local _targetMimgroup = Unit.getGroup(Weapon.getTarget(SEADWeapon))
@@ -20215,7 +20009,6 @@ function ESCORT:MenuReportTargets( Seconds )
   self.EscortMenuAttackNearbyTargets = MENU_CLIENT:New( self.EscortClient, "Attack targets", self.EscortMenu )
 
 
-  --self.ReportTargetsScheduler = routines.scheduleFunction( self._ReportTargetsScheduler, { self }, timer.getTime() + 1, Seconds )
   self.ReportTargetsScheduler = SCHEDULER:New( self, self._ReportTargetsScheduler, {}, 1, Seconds )
 
   return self
@@ -20437,7 +20230,6 @@ function ESCORT._SwitchReportNearbyTargets( MenuParam )
 
   if self.ReportTargets then
     if not self.ReportTargetsScheduler then
-      --self.ReportTargetsScheduler = routines.scheduleFunction( self._ReportTargetsScheduler, { self }, timer.getTime() + 1, 30 )
       self.ReportTargetsScheduler = SCHEDULER:New( self, self._ReportTargetsScheduler, {}, 1, 30 )
     end
   else
@@ -20514,16 +20306,6 @@ function ESCORT._AttackTarget( MenuParam )
     EscortGroup:OptionROEOpenFire()
     EscortGroup:OptionROTPassiveDefense()
     EscortGroup:SetState( EscortGroup, "Escort", self )
---    routines.scheduleFunction(
---      EscortGroup.PushTask,
---      { EscortGroup,
---        EscortGroup:TaskCombo(
---          { EscortGroup:TaskAttackUnit( AttackUnit ),
---            EscortGroup:TaskFunction( 1, 2, "_Resume", {"''"} )
---          }
---        )
---      }, timer.getTime() + 10
---    )
     SCHEDULER:New( EscortGroup,
       EscortGroup.PushTask,
       { EscortGroup:TaskCombo(
@@ -20534,15 +20316,6 @@ function ESCORT._AttackTarget( MenuParam )
       }, 10
     )
   else
---    routines.scheduleFunction(
---      EscortGroup.PushTask,
---      { EscortGroup,
---        EscortGroup:TaskCombo(
---          { EscortGroup:TaskFireAtPoint( AttackUnit:GetPointVec2(), 50 )
---          }
---        )
---      }, timer.getTime() + 10
---    )
     SCHEDULER:New( EscortGroup,
       EscortGroup.PushTask,
       { EscortGroup:TaskCombo(
@@ -20573,16 +20346,6 @@ function ESCORT._AssistTarget( MenuParam )
   if EscortGroupAttack:IsAir() then
     EscortGroupAttack:OptionROEOpenFire()
     EscortGroupAttack:OptionROTVertical()
---    routines.scheduleFunction(
---      EscortGroupAttack.PushTask,
---      { EscortGroupAttack,
---        EscortGroupAttack:TaskCombo(
---          { EscortGroupAttack:TaskAttackUnit( AttackUnit ),
---            EscortGroupAttack:TaskOrbitCircle( 500, 350 )
---          }
---        )
---      }, timer.getTime() + 10
---    )
     SCHDULER:New( EscortGroupAttack,
       EscortGroupAttack.PushTask,
       { EscortGroupAttack:TaskCombo(
@@ -20593,15 +20356,6 @@ function ESCORT._AssistTarget( MenuParam )
       }, 10
     )
   else
---    routines.scheduleFunction(
---      EscortGroupAttack.PushTask,
---      { EscortGroupAttack,
---        EscortGroupAttack:TaskCombo(
---          { EscortGroupAttack:TaskFireAtPoint( AttackUnit:GetPointVec2(), 50 )
---          }
---        )
---      }, timer.getTime() + 10
---    )
     SCHEDULER:New( EscortGroupAttack,
       EscortGroupAttack.PushTask,
       { EscortGroupAttack:TaskCombo(
@@ -20661,7 +20415,6 @@ function ESCORT._ResumeMission( MenuParam )
     table.remove( WayPoints, 1 )
   end
 
-  --routines.scheduleFunction( EscortGroup.SetTask, {EscortGroup, EscortGroup:TaskRoute( WayPoints ) }, timer.getTime() + 1 )
   SCHEDULER:New( EscortGroup, EscortGroup.SetTask, { EscortGroup:TaskRoute( WayPoints ) }, 1 )
 
   EscortGroup:MessageToClient( "Resuming mission from waypoint " .. WayPoint .. ".", 10, EscortClient )
@@ -23109,7 +22862,7 @@ end
 -- 
 -- 1.1) DETECTION_BASE constructor
 -- -------------------------------
--- Construct a new DETECTION_BASE instance using the @{Detection#DETECTION.New}() method.
+-- Construct a new DETECTION_BASE instance using the @{Detection#DETECTION_BASE.New}() method.
 -- 
 -- 1.2) DETECTION_BASE initialization
 -- ----------------------------------
@@ -23495,15 +23248,17 @@ function DETECTION_UNITGROUPS:SmokeDetectedUnits()
   self:F2()
 
   self._SmokeDetectedUnits = true
+  return self
 end
 
 --- Flare the detected units
 -- @param #DETECTION_UNITGROUPS self
 -- @return #DETECTION_UNITGROUPS self
-function DETECTION_UNITGROUPS:SmokeDetectedUnits()
+function DETECTION_UNITGROUPS:FlareDetectedUnits()
   self:F2()
 
   self._FlareDetectedUnits = true
+  return self
 end
 
 --- Smoke the detected zones
@@ -23513,6 +23268,7 @@ function DETECTION_UNITGROUPS:SmokeDetectedZones()
   self:F2()
 
   self._SmokeDetectedZones = true
+  return self
 end
 
 --- Flare the detected zones
@@ -23522,6 +23278,7 @@ function DETECTION_UNITGROUPS:FlareDetectedZones()
   self:F2()
 
   self._FlareDetectedZones = true
+  return self
 end
 
 
@@ -23546,7 +23303,6 @@ function DETECTION_UNITGROUPS:CreateDetectionSets()
         for DetectedZoneIndex = 1, #self.DetectedZones do
           self:T( "Detected Unit Set #" .. DetectedZoneIndex )
           local DetectedUnitSet = self.DetectedSets[DetectedZoneIndex] -- Set#SET_BASE
-          DetectedUnitSet:Flush()
           local DetectedZone = self.DetectedZones[DetectedZoneIndex] -- Zone#ZONE_UNIT
           if DetectedUnit:IsInZone( DetectedZone ) then
             self:T( "Adding to Unit Set #" .. DetectedZoneIndex )
