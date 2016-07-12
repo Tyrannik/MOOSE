@@ -211,7 +211,10 @@ function UNIT:GetPlayerName()
   
     local PlayerName = DCSUnit:getPlayerName()
     if PlayerName == nil then
-      PlayerName = ""
+      PlayerName = "No Player"
+    end
+    if PlayerName == "" then
+      PlayerName = "Empty Player"
     end
     return PlayerName
   end
@@ -249,7 +252,30 @@ function UNIT:GetGroup()
   local DCSUnit = self:GetDCSObject()
   
   if DCSUnit then
-    local UnitGroup = GROUP:Find( DCSUnit:getGroup() )
+    local DCSUnitGroup = DCSUnit:getGroup()
+
+    local UnitGroupID, UnitGroupName
+
+    if DCSUnitGroup then
+      if DCSUnitGroup:isExist() then 
+        self:T3( "Normal logic" )
+        self:T3( self.ClientName .. " : group found!" )
+        UnitGroupID = DCSUnitGroup:getID()
+        UnitGroupName = DCSUnitGroup:getName()
+      else
+        -- Now we need to resolve the client bug in DCS 1.5.4 ...
+        -- Consult the database for the units of the Unit Group. (UnitGroup:getUnits() returns nil)
+        self:T3( "Bug 1.5 logic" )
+        local UnitGroupTemplate = _DATABASE.Templates.Units[self.UnitName].GroupTemplate
+        UnitGroupID = UnitGroupTemplate.groupId
+        UnitGroupName = UnitGroupTemplate.GroupName
+        self:T3( self.ClientName .. " : group found in bug 1.5 resolvement logic!" )
+      end
+    end
+
+    local UnitGroup = GROUP:Find( DCSUnitGroup )
+    UnitGroup.GroupID = UnitGroupID
+    UnitGroup.GroupName = UnitGroupName
     return UnitGroup
   end
 
@@ -551,4 +577,81 @@ function UNIT:IsAir()
   self:T3( IsAirResult )
   return IsAirResult
 end
+
+----- Return the DCSGroup of a Unit.
+---- This function is modified to deal with the client group bug in DCS 1.5.3
+---- @param #UNIT self
+---- @return DCSGroup#Group
+--function CLIENT:GetDCSGroup()
+--  self:F3()
+--
+----  local ClientData = Group.getByName( self.ClientName )
+----  if ClientData and ClientData:isExist() then
+----    self:T( self.ClientName .. " : group found!" )
+----    return ClientData
+----  else
+----    return nil
+----  end
+--  
+--  local ClientUnit = Unit.getByName( self.ClientName )
+--
+--  local CoalitionsData = { AlivePlayersRed = coalition.getPlayers( coalition.side.RED ), AlivePlayersBlue = coalition.getPlayers( coalition.side.BLUE ) }
+--  for CoalitionId, CoalitionData in pairs( CoalitionsData ) do
+--    self:T3( { "CoalitionData:", CoalitionData } )
+--    for UnitId, UnitData in pairs( CoalitionData ) do
+--      self:T3( { "UnitData:", UnitData } )
+--      if UnitData and UnitData:isExist() then
+--
+--        --self:E(self.ClientName)
+--        if ClientUnit then
+--          local ClientGroup = ClientUnit:getGroup()
+--          if ClientGroup then
+--            self:T3( "ClientGroup = " .. self.ClientName )
+--            if ClientGroup:isExist() and UnitData:getGroup():isExist() then 
+--              if ClientGroup:getID() == UnitData:getGroup():getID() then
+--                self:T3( "Normal logic" )
+--                self:T3( self.ClientName .. " : group found!" )
+--                self.ClientGroupID = ClientGroup:getID()
+--                self.ClientGroupName = ClientGroup:getName()
+--                return ClientGroup
+--              end
+--            else
+--              -- Now we need to resolve the bugs in DCS 1.5 ...
+--              -- Consult the database for the units of the Client Group. (ClientGroup:getUnits() returns nil)
+--              self:T3( "Bug 1.5 logic" )
+--              local ClientGroupTemplate = _DATABASE.Templates.Units[self.ClientName].GroupTemplate
+--              self.ClientGroupID = ClientGroupTemplate.groupId
+--              self.ClientGroupName = _DATABASE.Templates.Units[self.ClientName].GroupName
+--              self:T3( self.ClientName .. " : group found in bug 1.5 resolvement logic!" )
+--              return ClientGroup
+--            end
+--  --        else
+--  --          error( "Client " .. self.ClientName .. " not found!" )
+--          end
+--        else
+--          --self:E( { "Client not found!", self.ClientName } )
+--        end
+--      end
+--    end
+--  end
+--
+--  -- For non player clients
+--  if ClientUnit then
+--    local ClientGroup = ClientUnit:getGroup()
+--    if ClientGroup then
+--      self:T3( "ClientGroup = " .. self.ClientName )
+--      if ClientGroup:isExist() then 
+--        self:T3( "Normal logic" )
+--        self:T3( self.ClientName .. " : group found!" )
+--        return ClientGroup
+--      end
+--    end
+--  end
+--  
+--  self.ClientGroupID = nil
+--  self.ClientGroupUnit = nil
+--  
+--  return nil
+--end 
+
 

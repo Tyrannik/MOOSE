@@ -92,9 +92,10 @@ end
 function MESSAGE:ToClient( Client )
 	self:F( Client )
 
-	if Client and Client:GetClientGroupID() then
+	if Client then
 
-		local ClientGroupID = Client:GetClientGroupID()
+		local ClientGroup = Client:GetGroup()
+		local ClientGroupID = ClientGroup:GetID()
 		self:T( self.MessageCategory .. self.MessageText:gsub("\n$",""):gsub("\n$","") .. " / " .. self.MessageDuration )
 		trigger.action.outTextForGroup( ClientGroupID, self.MessageCategory .. self.MessageText:gsub("\n$",""):gsub("\n$",""), self.MessageDuration )
 	end

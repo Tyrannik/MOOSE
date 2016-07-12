@@ -197,9 +197,14 @@ end
 -- @param #GROUP self
 -- @return DCSGroup#Group The DCS Group.
 function GROUP:GetDCSObject()
-  local DCSGroup = Group.getByName( self.GroupName )
 
+  local DCSGroup = Group.getByName( self.GroupName )
+  self:E( DCSGroup )
   if DCSGroup then
+    if DCSGroup.id_ == 0 and self.GroupID ~= nil then
+      DCSGroup.id_ = self.GroupID
+      self:E( "Group._id set to " .. DCSGroup._id )
+    end
     return DCSGroup
   end
 
