@@ -56,6 +56,8 @@ The following classes are currently embedded within MOOSE and can be included wi
 
 * [AIRBASE](Moose Training/Documentation/Airbase.html): This class wraps a DCS Airbase object within the simulator. The AIRBASE class derives from the POSITIONALBE class, thus contains also the position API set.
 
+* [MENU](Moose Training/Documentation/Menu.html): Manage DCS Menus for Coalitions, Groups, Clients.
+
 * [SETS](Moose Training/Documentation/Set.html): Builds dynamically a SET of objects. The SET can be filtered with defined filter criteria. Iterators are available that iterate through the GROUPSET, calling a function for each object within the SET.
 
 * [MESSAGE](Moose Training/Documentation/Message.html): A message system, displaying messages to Clients, Coalitions or All players. 
@@ -112,8 +114,8 @@ Working together with James has resulted in the creation of the AIBALANCER class
 **Stuka (Danny)**
 Working together with Danny has resulted in the MISSILETRAINER class. Stuka has shared his ideas and together we made a design. Together with the 476 virtual team, we tested this CLASS, and got much positive feedback!
 
-**Mechanic (Gábor)**
-Worked together with Gábor to create the concept of the DETECTION and FAC classes. Mechanic shared his ideas and concepts to group detected targets into sets within detection zones... Will continue to work with Gábor to workout the DETECTION and FAC classes.
+**Mechanic (Gï¿½bor)**
+Worked together with Gï¿½bor to create the concept of the DETECTION and FAC classes. Mechanic shared his ideas and concepts to group detected targets into sets within detection zones... Will continue to work with Gï¿½bor to workout the DETECTION and FAC classes.
 
 **Shadoh**
 Interacted on the eagle dynamics forum to build the FOLLOW class to build large WWII airplane formations.
