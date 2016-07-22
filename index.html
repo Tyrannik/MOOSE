@@ -88,6 +88,7 @@ Refer to the tool at <a href="https://github.com/FlightControl-Master/MOOSE/tree
 <li><p><a href="Moose%20Training/Documentation/Client.html">CLIENT</a>: This class wraps a DCS Unit object within the simulator, which has a skill Client or Player. The CLIENT class derives from the UNIT class, thus contains the complete UNIT API set, and additionally, the CLIENT class provides an API set to manage players joining or leaving clients, sending messages to players, and manage the state of units joined by players. For each DCS Unit object created within a running mission that can be joined by a player, a CLIENT object will be created automatically, that is stored within the DATABASE, under the _DATABASE object.</p></li>
 <li><p><a href="Moose%20Training/Documentation/Static.html">STATIC</a>: This class wraps a DCS StaticObject object within the simulator. The STATIC class derives from the POSITIONABLE class, thus contains also the position API set.</p></li>
 <li><p><a href="Moose%20Training/Documentation/Airbase.html">AIRBASE</a>: This class wraps a DCS Airbase object within the simulator. The AIRBASE class derives from the POSITIONALBE class, thus contains also the position API set.</p></li>
+<li><p><a href="Moose%20Training/Documentation/Menu.html">MENU</a>: Manage DCS Menus for Coalitions, Groups, Clients.</p></li>
 <li><p><a href="Moose%20Training/Documentation/Set.html">SETS</a>: Builds dynamically a SET of objects. The SET can be filtered with defined filter criteria. Iterators are available that iterate through the GROUPSET, calling a function for each object within the SET.</p></li>
 <li><p><a href="Moose%20Training/Documentation/Message.html">MESSAGE</a>: A message system, displaying messages to Clients, Coalitions or All players. </p></li>
 <li><p><a href="Moose%20Training/Documentation/Point.html">POINTS</a>: A set of point classes that provide the functionality to define points within the simulator, either 2D or 3D. These points have enriched functionality, like smoking, flaring and other functions.</p></li>
@@ -134,8 +135,8 @@ Working together with James has resulted in the creation of the AIBALANCER class
 <p><strong>Stuka (Danny)</strong>
 Working together with Danny has resulted in the MISSILETRAINER class. Stuka has shared his ideas and together we made a design. Together with the 476 virtual team, we tested this CLASS, and got much positive feedback!</p>
 
-<p><strong>Mechanic (Gábor)</strong>
-Worked together with Gábor to create the concept of the DETECTION and FAC classes. Mechanic shared his ideas and concepts to group detected targets into sets within detection zones... Will continue to work with Gábor to workout the DETECTION and FAC classes.</p>
+<p><strong>Mechanic (Gabor)</strong>
+Worked together with Gabor to create the concept of the DETECTION and FAC classes. Mechanic shared his ideas and concepts to group detected targets into sets within detection zones... Will continue to work with Gabor to workout the DETECTION and FAC classes.</p>
 
 <p><strong>Shadoh</strong>
 Interacted on the eagle dynamics forum to build the FOLLOW class to build large WWII airplane formations.</p>
