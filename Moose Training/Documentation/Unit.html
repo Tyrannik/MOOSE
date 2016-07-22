@@ -37,6 +37,7 @@
 					<li><a href="DCSWorld.html">DCSWorld</a></li>
 					<li><a href="DCScountry.html">DCScountry</a></li>
 					<li><a href="DCStimer.html">DCStimer</a></li>
+					<li><a href="DCStrigger.html">DCStrigger</a></li>
 					<li><a href="DEPLOYTASK.html">DEPLOYTASK</a></li>
 					<li><a href="DESTROYBASETASK.html">DESTROYBASETASK</a></li>
 					<li><a href="DESTROYGROUPSTASK.html">DESTROYGROUPSTASK</a></li>
@@ -44,9 +45,9 @@
 					<li><a href="DESTROYUNITTYPESTASK.html">DESTROYUNITTYPESTASK</a></li>
 					<li><a href="Database.html">Database</a></li>
 					<li><a href="Detection.html">Detection</a></li>
+					<li><a href="DetectionManager.html">DetectionManager</a></li>
 					<li><a href="Escort.html">Escort</a></li>
 					<li><a href="Event.html">Event</a></li>
-					<li><a href="Fac.html">Fac</a></li>
 					<li><a href="GOHOMETASK.html">GOHOMETASK</a></li>
 					<li><a href="Group.html">Group</a></li>
 					<li><a href="Identifiable.html">Identifiable</a></li>
@@ -61,6 +62,10 @@
 					<li><a href="PatrolZone.html">PatrolZone</a></li>
 					<li><a href="Point.html">Point</a></li>
 					<li><a href="Positionable.html">Positionable</a></li>
+					<li><a href="Process.html">Process</a></li>
+					<li><a href="Process_Destroy.html">Process_Destroy</a></li>
+					<li><a href="Process_JTAC.html">Process_JTAC</a></li>
+					<li><a href="Process_Smoke.html">Process_Smoke</a></li>
 					<li><a href="ROUTETASK.html">ROUTETASK</a></li>
 					<li><a href="STAGE.html">STAGE</a></li>
 					<li><a href="Scheduler.html">Scheduler</a></li>
@@ -68,9 +73,15 @@
 					<li><a href="Sead.html">Sead</a></li>
 					<li><a href="Set.html">Set</a></li>
 					<li><a href="Spawn.html">Spawn</a></li>
+					<li><a href="StateMachine.html">StateMachine</a></li>
 					<li><a href="Static.html">Static</a></li>
 					<li><a href="StaticObject.html">StaticObject</a></li>
-					<li><a href="TASK.html">TASK</a></li>
+					<li><a href="Task.html">Task</a></li>
+					<li><a href="Task_Assign.html">Task_Assign</a></li>
+					<li><a href="Task_CAS.html">Task_CAS</a></li>
+					<li><a href="Task_Client_Menu.html">Task_Client_Menu</a></li>
+					<li><a href="Task_Route.html">Task_Route</a></li>
+					<li><a href="Task_SEAD.html">Task_SEAD</a></li>
 					<li>Unit</li>
 					<li><a href="Zone.html">Zone</a></li>
 					<li><a href="env.html">env</a></li>
@@ -133,7 +144,7 @@ methods will fire off a flare in the air with the corresponding color. Note that
 <h2>1.4) Location Position, Point</h2>
 <p>The UNIT class provides methods to obtain the current point or position of the DCS Unit.
 The <a href="##(UNIT).GetPointVec2">UNIT.GetPointVec2</a>(), <a href="##(UNIT).GetPointVec3">UNIT.GetPointVec3</a>() will obtain the current <strong>location</strong> of the DCS Unit in a Vec2 (2D) or a <strong>point</strong> in a Vec3 (3D) vector respectively.
-If you want to obtain the complete <strong>3D position</strong> including oriëntation and direction vectors, consult the <a href="##(UNIT).GetPositionVec3">UNIT.GetPositionVec3</a>() method respectively.</p>
+If you want to obtain the complete <strong>3D position</strong> including oriï¿½ntation and direction vectors, consult the <a href="##(UNIT).GetPositionVec3">UNIT.GetPositionVec3</a>() method respectively.</p>
 
 <h2>1.5) Test if alive</h2>
 <p>The <a href="##(UNIT).IsAlive">UNIT.IsAlive</a>(), <a href="##(UNIT).IsActive">UNIT.IsActive</a>() methods determines if the DCS Unit is alive, meaning, it is existing and active.</p>
@@ -163,6 +174,12 @@ If you want to obtain the complete <strong>3D position</strong> including oriënt
 		<td class="name" nowrap="nowrap"><a href="##(UNIT).ClassName">UNIT.ClassName</a></td>
 		<td class="summary">
 
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(UNIT).Destroy">UNIT:Destroy()</a></td>
+		<td class="summary">
+<p>Destroys the <a href="Unit.html">Unit</a>.</p>
 </td>
 		</tr>
 		<tr>
@@ -220,7 +237,7 @@ If you want to obtain the complete <strong>3D position</strong> including oriënt
 </td>
 		</tr>
 		<tr>
-		<td class="name" nowrap="nowrap"><a href="##(UNIT).GetCallSign">UNIT:GetCallSign()</a></td>
+		<td class="name" nowrap="nowrap"><a href="##(UNIT).GetCallsign">UNIT:GetCallsign()</a></td>
 		<td class="summary">
 <p>Returns the Unit's callsign - the localized string.</p>
 </td>
@@ -290,6 +307,24 @@ If you want to obtain the complete <strong>3D position</strong> including oriënt
 </td>
 		</tr>
 		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(UNIT).GetThreatLevel">UNIT:GetThreatLevel()</a></td>
+		<td class="summary">
+<p>Returns the Unit's A2G threat level on a scale from 1 to 10 ...</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(UNIT).HasSEAD">UNIT:HasSEAD()</a></td>
+		<td class="summary">
+<p>Returns if the unit is SEADable.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(UNIT).HasSensors">UNIT:HasSensors(...)</a></td>
+		<td class="summary">
+<p>Returns if the unit has sensors of a certain type.</p>
+</td>
+		</tr>
+		<tr>
 		<td class="name" nowrap="nowrap"><a href="##(UNIT).IsActive">UNIT:IsActive()</a></td>
 		<td class="summary">
 <p>Returns if the unit is activated.</p>
@@ -299,6 +334,18 @@ If you want to obtain the complete <strong>3D position</strong> including oriënt
 		<td class="name" nowrap="nowrap"><a href="##(UNIT).IsAir">UNIT:IsAir()</a></td>
 		<td class="summary">
 <p>Returns if the unit is of an air category.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(UNIT).IsFriendly">UNIT:IsFriendly(FriendlyCoalition)</a></td>
+		<td class="summary">
+<p>Returns if the unit is a friendly unit.</p>
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(UNIT).IsGround">UNIT:IsGround()</a></td>
+		<td class="summary">
+<p>Returns if the unit is of an ground category.</p>
 </td>
 		</tr>
 		<tr>
@@ -314,6 +361,12 @@ If you want to obtain the complete <strong>3D position</strong> including oriënt
 </td>
 		</tr>
 		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(UNIT).IsShip">UNIT:IsShip()</a></td>
+		<td class="summary">
+<p>Returns if the unit is of a ship category.</p>
+</td>
+		</tr>
+		<tr>
 		<td class="name" nowrap="nowrap"><a href="##(UNIT).OtherUnitInRadius">UNIT:OtherUnitInRadius(AwaitUnit, Radius)</a></td>
 		<td class="summary">
 <p>Returns true if there is an <strong>other</strong> DCS Unit within a radius of the current 2D point of the DCS Unit.</p>
@@ -326,7 +379,7 @@ If you want to obtain the complete <strong>3D position</strong> including oriënt
 </td>
 		</tr>
 		<tr>
-		<td class="name" nowrap="nowrap"><a href="##(UNIT).Smoke">UNIT:Smoke(SmokeColor)</a></td>
+		<td class="name" nowrap="nowrap"><a href="##(UNIT).Smoke">UNIT:Smoke(SmokeColor, Range)</a></td>
 		<td class="summary">
 <p>Smoke the UNIT.</p>
 </td>
@@ -431,6 +484,34 @@ If you want to obtain the complete <strong>3D position</strong> including oriënt
 		</tr>
 	</table>
 
+			<h2><a id="#(Unit.SensorType)">Type <code>Unit.SensorType</code></a></h2>
+				<table class="function_list">
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(Unit.SensorType).IRST">Unit.SensorType.IRST</a></td>
+		<td class="summary">
+
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(Unit.SensorType).OPTIC">Unit.SensorType.OPTIC</a></td>
+		<td class="summary">
+
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(Unit.SensorType).RADAR">Unit.SensorType.RADAR</a></td>
+		<td class="summary">
+
+</td>
+		</tr>
+		<tr>
+		<td class="name" nowrap="nowrap"><a href="##(Unit.SensorType).RWR">Unit.SensorType.RWR</a></td>
+		<td class="summary">
+
+</td>
+		</tr>
+	</table>
+
 	<h2>Global(s)</h2>
 		<dl class="function">
 <dt>
@@ -464,6 +545,24 @@ If you want to obtain the complete <strong>3D position</strong> including oriënt
 <dd>
 	
 
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(UNIT).Destroy" >
+<strong>UNIT:Destroy()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Destroys the <a href="Unit.html">Unit</a>.</p>
+
+		<h3>Return value</h3>
+				
+<p><em>#nil:</em>
+The DCS Unit is not existing or alive.  </p>
 
 </dd>
 </dl>
@@ -639,8 +738,8 @@ The DCS Unit is not existing or alive.  </p>
 		<dl class="function">
 <dt>
 
-<a id="#(UNIT).GetCallSign" >
-<strong>UNIT:GetCallSign()</strong>
+<a id="#(UNIT).GetCallsign" >
+<strong>UNIT:GetCallsign()</strong>
 </a>
 </dt>
 <dd>
@@ -968,6 +1067,100 @@ The DCS Unit is not existing or alive.  </p>
 		<dl class="function">
 <dt>
 
+<a id="#(UNIT).GetThreatLevel" >
+<strong>UNIT:GetThreatLevel()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Returns the Unit's A2G threat level on a scale from 1 to 10 ...</p>
+
+	
+<p>The following threat levels are foreseen:</p>
+
+<ul>
+    <li>Threat level  0: Unit is unarmed.</li>
+    <li>Threat level  1: Unit is infantry.</li>
+    <li>Threat level  2: Unit is an infantry vehicle.</li>
+    <li>Threat level  3: Unit is ground artillery.</li>
+    <li>Threat level  4: Unit is a tank.</li>
+    <li>Threat level  5: Unit is a modern tank or ifv with ATGM.</li>
+    <li>Threat level  6: Unit is a AAA.</li>
+    <li>Threat level  7: Unit is a SAM or manpad, IR guided.</li>
+    <li>Threat level  8: Unit is a Short Range SAM, radar guided.</li>
+    <li>Threat level  9: Unit is a Medium Range SAM, radar guided.</li>
+    <li>Threat level 10: Unit is a Long Range SAM, radar guided.</li>
+</ul>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(UNIT).HasSEAD" >
+<strong>UNIT:HasSEAD()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Returns if the unit is SEADable.</p>
+
+		<h3>Return values</h3>
+			<ol>
+				<li>
+				
+<p><em>#boolean:</em>
+returns true if the unit is SEADable. </p>
+
+				</li>
+				<li>
+				
+<p><em>#nil:</em>
+The DCS Unit is not existing or alive.  </p>
+
+				</li>
+			</ol>
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(UNIT).HasSensors" >
+<strong>UNIT:HasSensors(...)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Returns if the unit has sensors of a certain type.</p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em> ... </em></code>: </p>
+
+				</li>
+		</ul>
+		<h3>Return values</h3>
+			<ol>
+				<li>
+				
+<p><em>#boolean:</em>
+returns true if the unit has specified types of sensors. This function is more preferable than Unit.getSensors() if you don't want to get information about all the unit's sensors, and just want to check if the unit has specified types of sensors. </p>
+
+				</li>
+				<li>
+				
+<p><em>#nil:</em>
+The DCS Unit is not existing or alive.  </p>
+
+				</li>
+			</ol>
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
 <a id="#(UNIT).IsActive" >
 <strong>UNIT:IsActive()</strong>
 </a>
@@ -1011,6 +1204,53 @@ The DCS Unit is not existing or alive.  </p>
 				
 <p><em>#boolean:</em>
 Air category evaluation result.</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(UNIT).IsFriendly" >
+<strong>UNIT:IsFriendly(FriendlyCoalition)</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Returns if the unit is a friendly unit.</p>
+
+		<h3>Parameter</h3>
+		<ul>
+				<li>
+				
+<p><code><em> FriendlyCoalition </em></code>: </p>
+
+				</li>
+		</ul>
+		<h3>Return value</h3>
+				
+<p><em>#boolean:</em>
+IsFriendly evaluation result.</p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(UNIT).IsGround" >
+<strong>UNIT:IsGround()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Returns if the unit is of an ground category.</p>
+
+	
+<p>If the unit is a ground vehicle or infantry, this method will return true, otherwise false.</p>
+
+		<h3>Return value</h3>
+				
+<p><em>#boolean:</em>
+Ground category evaluation result.</p>
 
 </dd>
 </dl>
@@ -1065,6 +1305,27 @@ The zone to test.</p>
 				
 <p><em>#boolean:</em>
 Returns true if the unit is not within the <a href="Zone.html##(ZONE_BASE)">Zone#ZONE_BASE</a></p>
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(UNIT).IsShip" >
+<strong>UNIT:IsShip()</strong>
+</a>
+</dt>
+<dd>
+	
+<p>Returns if the unit is of a ship category.</p>
+
+	
+<p>If the unit is a ship, this method will return true, otherwise false.</p>
+
+		<h3>Return value</h3>
+				
+<p><em>#boolean:</em>
+Ship category evaluation result.</p>
 
 </dd>
 </dl>
@@ -1142,18 +1403,23 @@ The name of the DCS unit.</p>
 <dt>
 
 <a id="#(UNIT).Smoke" >
-<strong>UNIT:Smoke(SmokeColor)</strong>
+<strong>UNIT:Smoke(SmokeColor, Range)</strong>
 </a>
 </dt>
 <dd>
 	
 <p>Smoke the UNIT.</p>
 
-		<h3>Parameter</h3>
+		<h3>Parameters</h3>
 		<ul>
 				<li>
 				
 <p><code><em> SmokeColor </em></code>: </p>
+
+				</li>
+				<li>
+				
+<p><code><em> Range </em></code>: </p>
 
 				</li>
 		</ul>
@@ -1359,6 +1625,64 @@ The name of the DCS unit.</p>
 
 <a id="#(UNIT.SmokeColor).White" >
 <strong>UNIT.SmokeColor.White</strong>
+</a>
+</dt>
+<dd>
+	
+
+
+</dd>
+</dl>
+
+			<h2><a id="#(Unit.SensorType)" >Type <code>Unit.SensorType</code></a></h2>
+				
+<p>Unit.SensorType</p>
+
+	<h3>Field(s)</h3>
+		<dl class="function">
+<dt>
+
+<a id="#(Unit.SensorType).IRST" >
+<strong>Unit.SensorType.IRST</strong>
+</a>
+</dt>
+<dd>
+	
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(Unit.SensorType).OPTIC" >
+<strong>Unit.SensorType.OPTIC</strong>
+</a>
+</dt>
+<dd>
+	
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(Unit.SensorType).RADAR" >
+<strong>Unit.SensorType.RADAR</strong>
+</a>
+</dt>
+<dd>
+	
+
+
+</dd>
+</dl>
+		<dl class="function">
+<dt>
+
+<a id="#(Unit.SensorType).RWR" >
+<strong>Unit.SensorType.RWR</strong>
 </a>
 </dt>
 <dd>

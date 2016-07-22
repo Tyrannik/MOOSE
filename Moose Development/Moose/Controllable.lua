@@ -600,7 +600,7 @@ function CONTROLLABLE:TaskOrbitCircle( Altitude, Speed )
   local DCSControllable = self:GetDCSObject()
 
   if DCSControllable then
-    local ControllablePoint = self:GetPointVec2()
+    local ControllablePoint = self:GetVec2()
     return self:TaskOrbitCircleAtVec2( ControllablePoint, Altitude, Speed )
   end
 
@@ -777,7 +777,7 @@ function CONTROLLABLE:TaskLandAtZone( Zone, Duration, RandomPoint )
   if RandomPoint then
     Point = Zone:GetRandomVec2()
   else
-    Point = Zone:GetPointVec2()
+    Point = Zone:GetVec2()
   end
 
   local DCSTask = self:TaskLandAtVec2( Point, Duration )
@@ -1377,7 +1377,7 @@ end
 function CONTROLLABLE:TaskRouteToVec2( Point, Speed )
   self:F2( { Point, Speed } )
 
-  local ControllablePoint = self:GetUnit( 1 ):GetPointVec2()
+  local ControllablePoint = self:GetUnit( 1 ):GetVec2()
 
   local PointFrom = {}
   PointFrom.x = ControllablePoint.x
@@ -1516,7 +1516,7 @@ function CONTROLLABLE:TaskRouteToZone( Zone, Randomize, Speed, Formation )
 
   if DCSControllable then
 
-    local ControllablePoint = self:GetPointVec2()
+    local ControllablePoint = self:GetVec2()
 
     local PointFrom = {}
     PointFrom.x = ControllablePoint.x
@@ -1532,7 +1532,7 @@ function CONTROLLABLE:TaskRouteToZone( Zone, Randomize, Speed, Formation )
     if Randomize then
       ZonePoint = Zone:GetRandomVec2()
     else
-      ZonePoint = Zone:GetPointVec2()
+      ZonePoint = Zone:GetVec2()
     end
 
     PointTo.x = ZonePoint.x
@@ -1614,7 +1614,7 @@ function CONTROLLABLE:RouteReturnToAirbase( ReturnAirbase, Speed )
 
   if DCSControllable then
 
-    local ControllablePoint = self:GetPointVec2()
+    local ControllablePoint = self:GetVec2()
     local ControllableVelocity = self:GetMaxVelocity()
 
     local PointFrom = {}
@@ -1626,7 +1626,7 @@ function CONTROLLABLE:RouteReturnToAirbase( ReturnAirbase, Speed )
 
 
     local PointTo = {}
-    local AirbasePoint = ReturnAirbase:GetPointVec2()
+    local AirbasePoint = ReturnAirbase:GetVec2()
 
     PointTo.x = AirbasePoint.x
     PointTo.y = AirbasePoint.y
@@ -2119,6 +2119,7 @@ end
 -- @param #table WayPoints If WayPoints is given, then use the route.
 -- @return #CONTROLLABLE
 function CONTROLLABLE:WayPointInitialize( WayPoints )
+  self:F( { WayPoint, WayPointIndex, WayPointFunction } )
 
   if WayPoints then
     self.WayPoints = WayPoints
@@ -2179,6 +2180,7 @@ end
 -- @param #number WaitTime The amount seconds to wait before initiating the mission.
 -- @return #CONTROLLABLE
 function CONTROLLABLE:WayPointExecute( WayPoint, WaitTime )
+  self:F( { WayPoint, WaitTime } )
 
   if not WayPoint then
     WayPoint = 1
@@ -2196,4 +2198,120 @@ function CONTROLLABLE:WayPointExecute( WayPoint, WaitTime )
   return self
 end
 
+-- Message APIs
+
+--- Returns a message with the callsign embedded (if there is one).
+-- @param #CONTROLLABLE self
+-- @param #string Message The message text
+-- @param DCSTypes#Duration Duration The duration of the message.
+-- @return Message#MESSAGE
+function CONTROLLABLE:GetMessage( Message, Duration )
+
+  local DCSObject = self:GetDCSObject()
+  if DCSObject then
+    return MESSAGE:New( Message, Duration, self:GetCallsign() .. " (" .. self:GetTypeName() .. ")" )
+  end
+
+  return nil
+end
+
+--- Send a message to all coalitions.
+-- The message will appear in the message area. The message will begin with the callsign of the group and the type of the first unit sending the message.
+-- @param #CONTROLLABLE self
+-- @param #string Message The message text
+-- @param DCSTypes#Duration Duration The duration of the message.
+function CONTROLLABLE:MessageToAll( Message, Duration )
+  self:F2( { Message, Duration } )
+
+  local DCSObject = self:GetDCSObject()
+  if DCSObject then
+    self:GetMessage( Message, Duration ):ToAll()
+  end
+
+  return nil
+end
+
+--- Send a message to the red coalition.
+-- The message will appear in the message area. The message will begin with the callsign of the group and the type of the first unit sending the message.
+-- @param #CONTROLLABLE self
+-- @param #string Message The message text
+-- @param DCSTYpes#Duration Duration The duration of the message.
+function CONTROLLABLE:MessageToRed( Message, Duration )
+  self:F2( { Message, Duration } )
+
+  local DCSObject = self:GetDCSObject()
+  if DCSObject then
+    self:GetMessage( Message, Duration ):ToRed()
+  end
+
+  return nil
+end
+
+--- Send a message to the blue coalition.
+-- The message will appear in the message area. The message will begin with the callsign of the group and the type of the first unit sending the message.
+-- @param #CONTROLLABLE self
+-- @param #string Message The message text
+-- @param DCSTypes#Duration Duration The duration of the message.
+function CONTROLLABLE:MessageToBlue( Message, Duration )
+  self:F2( { Message, Duration } )
+
+  local DCSObject = self:GetDCSObject()
+  if DCSObject then
+    self:GetMessage( Message, Duration ):ToBlue()
+  end
+
+  return nil
+end
+
+--- Send a message to a client.
+-- The message will appear in the message area. The message will begin with the callsign of the group and the type of the first unit sending the message.
+-- @param #CONTROLLABLE self
+-- @param #string Message The message text
+-- @param DCSTypes#Duration Duration The duration of the message.
+-- @param Client#CLIENT Client The client object receiving the message.
+function CONTROLLABLE:MessageToClient( Message, Duration, Client )
+  self:F2( { Message, Duration } )
+
+  local DCSObject = self:GetDCSObject()
+  if DCSObject then
+    self:GetMessage( Message, Duration ):ToClient( Client )
+  end
+
+  return nil
+end
+
+--- Send a message to a @{Group}.
+-- The message will appear in the message area. The message will begin with the callsign of the group and the type of the first unit sending the message.
+-- @param #CONTROLLABLE self
+-- @param #string Message The message text
+-- @param DCSTypes#Duration Duration The duration of the message.
+-- @param Group#GROUP MessageGroup The GROUP object receiving the message.
+function CONTROLLABLE:MessageToGroup( Message, Duration, MessageGroup )
+  self:F2( { Message, Duration } )
+
+  local DCSObject = self:GetDCSObject()
+  if DCSObject then
+    if DCSObject:isExist() then
+      self:GetMessage( Message, Duration ):ToGroup( MessageGroup )
+    end
+  end
+
+  return nil
+end
+
+--- Send a message to the players in the @{Group}.
+-- The message will appear in the message area. The message will begin with the callsign of the group and the type of the first unit sending the message.
+-- @param #CONTROLLABLE self
+-- @param #string Message The message text
+-- @param DCSTypes#Duration Duration The duration of the message.
+function CONTROLLABLE:Message( Message, Duration )
+  self:F2( { Message, Duration } )
+
+  local DCSObject = self:GetDCSObject()
+  if DCSObject then
+    self:GetMessage( Message, Duration ):ToGroup( self )
+  end
+
+  return nil
+end
 
